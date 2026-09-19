@@ -1,0 +1,12 @@
+# Dependencias
+**/node_modules/
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# Archivos de compilación
+**/dist/
+**/.angular/
+
+# Entornos y variables privadas
+**/.env
