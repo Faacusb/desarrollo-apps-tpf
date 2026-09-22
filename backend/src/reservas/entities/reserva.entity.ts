@@ -1,7 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { EstadosReservaEnum } from "...../estados-reserva.enum.js";
-
-
+import { estadosreservaEnum } from "../../common/enums/estados-reserva.enum.js";
 
 @Entity({ name: "Reserva" })
 export class Reserva {
@@ -18,8 +16,8 @@ export class Reserva {
     @Column({ name: 'correo_electronico', nullable: true, length: 100 })
     correoElectronico!: string;
 
-    @Column({ type: 'enum', enum: EstadosReservaEnum })
-    estado!: EstadosReservaEnum;
+    @Column({ type: 'enum', enum: estadosreservaEnum })
+    estado!: estadosreservaEnum;
 
 }
 

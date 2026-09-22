@@ -1,20 +1,18 @@
-import { BadRequestException, Inject, Injectable, forwardRef } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Reserva } from "../entity/reserva.entity";
-import { ListReservaDTO } from "../dto/output/List-Reserva.dto";
+import { Reserva} from "./entities/reserva.entity.js"
+ import { ListReservaDTO } from "../dto/output/List-Reserva.dto";
 import { Repository } from "typeorm";
-import { EstadosReservaEnum } from "../Estados-Reserva.enums";
-
+import { estadosreservaEnum } from "../common/enums/estados-reserva.enum.js";
 
 @Injectable()
 export class ReservaService {
 
-    constructor(@InjectRepository(Reserva) private readonly repository: Repository<Reserva>,
- @Inject(forwardRef(() => ReservasService)) private readonly ReservasService: ReservasService) { }
+    constructor(@InjectRepository(Reserva) private readonly repository: Repository<Reserva>) { }
 
-async obtenerReservaPacientes(idPaciente: number): Promise<ListReservaDTO[]> {
+async obtenerReservaPacientes(idPacientes: number): Promise<ListReservaDTO[]> {
 
-        const Reserva: Reserva[] = await this.repository.find({ idPaciente ,Reserva, order: { id: 'ASC' } });
+        const reservas: Reserva[] = await this.repository.find({   where: { idPaciente: idPacientes }, order: { id: "ASC" },});
 
        const dtoList: ListReservaDTO[] = [];
 
@@ -32,11 +30,11 @@ async obtenerReservaPacientes(idPaciente: number): Promise<ListReservaDTO[]> {
   }
 
 
-  async CancelarReservaPaciente(idPaciente: number): Promise<void> {
-    const reservas: Reserva |null= await this.repository.find({ where: { id: idPaciente } });
-const reserva = reservas[0];
-  
-if (reserva.estado === EstadosReservaEnum.ACTIVO) {
+  async CancelarReservaPaciente(idPacientes: number): Promise<void> {
+    const reservas: Reserva[] | null = await this.repository.find({ where: { idPaciente: idPacientes }, order: { id: 'ASC' } });
+    const reserva = reservas[0];
+
+    if (reserva.estado === estadosreservaEnum.ACTIVO) {
       throw new BadRequestException("La Reserva NO esta activa");
     }
 
@@ -52,7 +50,7 @@ if (reserva.estado === EstadosReservaEnum.ACTIVO) {
     }
 
     
-    reserva.estado = EstadosReservaEnum.CANCELADO;
+    reserva.estado = estadosreservaEnum.CANCELAR;
     await this.repository.save(reserva);
   }
 }
