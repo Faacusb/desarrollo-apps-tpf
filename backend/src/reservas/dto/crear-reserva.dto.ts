@@ -1,4 +1,4 @@
-
+//para usuario-paciente?
 import { ApiProperty } from "@nestjs/swagger";
 
     export class CrearReservaDto {
