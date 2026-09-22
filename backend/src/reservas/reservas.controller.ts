@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Patch } from "@nestjs/common";
-import { ListReservaDTO } from "./dto/output/List-Reserva.dto.js";
-import { ReservaService } from "../../../service/reserva.service.js";
-import { CambiarEstadoReservaDto } from "./dto/cambiar-estado.dto.js";
+import { ListReservaDTO } from "./dto/output/list-reserva.dto.js";
+import { ReservaService } from "./reservas.service.js";
+import { CambiarEstadoDto } from "./dto/cambiar-estado.dto.js";
  
 @Controller('Reservas')
  export class ReservasController {
@@ -21,9 +21,14 @@ import { CambiarEstadoReservaDto } from "./dto/cambiar-estado.dto.js";
     @Patch(":id")
     async cancelarReservapacinte(
         @Param('id') id: number,
-        @Body() dto: CambiarEstadoReservaDto,
+        @Body() dto: CambiarEstadoDto,
     ): Promise<void> {
+
+        // aca creo que estoy llamando mal  el service 
+
 
         return await this.reservaService.CancelarReservaPaciente(id, dto);
     }
  }
+
+

@@ -1,13 +1,13 @@
 
 import { ApiProperty,} from "@nestjs/swagger";
 import { IsEnum, IsNotEmpty } from "class-validator";
-import { EstadosReservaEnum } from "../../../../enums/Estados-Reserva.enums.js";
+import { estadosreservaEnum } from "../../common/enums/estados-reserva.enum.js";
 
 export class CambiarEstadoDto {
 
-    @ApiProperty({ enum: EstadosReservaEnum, example: EstadosReservaEnum.CANCELADO})
-    @IsEnum(EstadosReservaEnum)
+    @ApiProperty({ enum: estadosreservaEnum, example: estadosreservaEnum.CANCELAR})
+    @IsEnum(estadosreservaEnum)
   @IsNotEmpty ()
-    estado!: EstadosReservaEnum;
+    estado!: estadosreservaEnum;
 
 }

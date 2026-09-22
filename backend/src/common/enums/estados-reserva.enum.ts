@@ -1,4 +1,4 @@
-export enum EstadosReservaEnum {
+export enum estadosreservaEnum {
       ACTIVO = 'ACTIVO',
     ATENDIENDO = 'ATENDIENDO ',
     AUSENTE = 'AUSENTE',
