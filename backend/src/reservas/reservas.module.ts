@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Reserva } from "./entity/reserva.entity.js";
+import { Reserva } from "./entities/reserva.entity.js";
 import { ReservasController } from "./reservas.controller.js";
-import { ReservaService } from "../../../service/reserva.service.js";
+import { ReservaService } from "./reservas.service.js";
 
 @Module({
     imports: [
