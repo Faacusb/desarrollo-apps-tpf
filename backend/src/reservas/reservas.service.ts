@@ -21,7 +21,7 @@ export class ReservasService {
 
     async obtenerReservaPacientes(idPaciente: number): Promise<ListReservaDTO[]> {
 
-        const Reserva: Reserva[] = await this.repository.find({ idPaciente ,Reserva, order: { id: 'ASC' } });
+        const reservas: Reserva[] = await this.repository.find({   where: { idPaciente: idPacientes }, order: { id: "ASC" },});
 
        const dtoList: ListReservaDTO[] = [];
 
@@ -39,11 +39,11 @@ export class ReservasService {
   }
 
 
-    async CancelarReservaPaciente(idPaciente: number): Promise<void> {
-        const reservas: Reserva |null= await this.repository.find({ where: { id: idPaciente } });
-        const reserva = reservas[0];
-  
-if (reserva.estado === EstadosReservaEnum.ACTIVO) {
+  async CancelarReservaPaciente(idPacientes: number): Promise<void> {
+    const reservas: Reserva[] | null = await this.repository.find({ where: { idPaciente: idPacientes }, order: { id: 'ASC' } });
+    const reserva = reservas[0];
+
+    if (reserva.estado === estadosreservaEnum.ACTIVO) {
       throw new BadRequestException("La Reserva NO esta activa");
     }
 
@@ -59,7 +59,7 @@ if (reserva.estado === EstadosReservaEnum.ACTIVO) {
     }
 
     
-    reserva.estado = EstadosReservaEnum.CANCELADO;
+    reserva.estado = estadosreservaEnum.CANCELAR;
     await this.repository.save(reserva);
     }
 

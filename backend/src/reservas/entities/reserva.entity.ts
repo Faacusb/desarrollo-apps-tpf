@@ -20,8 +20,8 @@ export class Reserva {
     //@Column({ name: 'correo_electronico', nullable: true, length: 100 }) --> va para usuarios o la list de una reserva
     //correoElectronico!: string;
 
-    @Column({ type: 'enum', enum: EstadosReservaEnum })
-    estado!: EstadosReservaEnum;
+    @Column({ type: 'enum', enum: estadosreservaEnum })
+    estado!: estadosreservaEnum;
 
     //relaciones agregadas del admin - integrante 2
     @ManyToOne("Medico", (medico: Medico) => medico.reservas)

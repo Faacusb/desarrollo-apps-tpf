@@ -25,7 +25,7 @@ import { CrearReservaAdminDto } from "./dto/crear-reserva-admin.dto.js";
     @Patch(":id")
     async cancelarReservapacinte(
         @Param('id') id: number,
-        @Body() dto: CambiarEstadoReservaDto,
+        @Body() dto: CambiarEstadoDto,
     ): Promise<void> {
 
         return await this.reservasService.CancelarReservaPaciente(id, dto);
