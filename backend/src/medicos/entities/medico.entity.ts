@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { Reserva } from "../../reservas/entities/reserva.entity.js";
 
 @Entity({ name: "medicos" })
 export class Medico{
@@ -14,4 +15,7 @@ export class Medico{
 
     @Column({ name: 'valor_consulta' })
     valorConsulta: number //necesario para admin
+
+    @OneToMany('Reserva', (reserva: Reserva) => reserva.medico)
+    reservas!: Reserva[]
 }

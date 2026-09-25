@@ -25,10 +25,7 @@ export class ListMedicoDto{
     id!: number;
 
     @ApiProperty()
-    nombres!: string;
-
-    @ApiProperty()
-    apellidos!: string;
+    matricula!: number;
 
     @ApiProperty()
     valorConsulta!: number;

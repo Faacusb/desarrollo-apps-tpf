@@ -14,11 +14,11 @@ export class Reserva {
     @Column()
     nombre!: string;
 
-    @Column()
-    fecha_hora!: Date;
+    @Column({ name: 'fecha_hora' })
+    fechaHora!: Date;
 
-    @Column({ name: 'correo_electronico', nullable: true, length: 100 })
-    correoElectronico!: string;
+    //@Column({ name: 'correo_electronico', nullable: true, length: 100 }) --> va para usuarios o la list de una reserva
+    //correoElectronico!: string;
 
     @Column({ type: 'enum', enum: EstadosReservaEnum })
     estado!: EstadosReservaEnum;
