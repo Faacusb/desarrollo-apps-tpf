@@ -1,21 +1,18 @@
 //para usuario-paciente?
 import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEmpty, IsNumber,IsDateString   } from "class-validator";
 
-    export class CrearReservaDto {
+ export class CrearReservaDto {
+    @ApiProperty()
+    @IsNumber()
+    @IsNotEmpty()
+     idMedico!: number;
 
     @ApiProperty()
-    id!: number;
-
-    @ApiProperty()
-    nombre!: string;
-
-    @ApiProperty()
-    fecha_hora!: Date ;  
-
-    @ApiProperty({ required: false, nullable: true })
-    correoElectronico!: string;
-
-    @ApiProperty()
-    estado!:  string;
+    @IsDateString()
+    @IsNotEmpty()
+    fechaHora !: string;
 
 }
+
+
