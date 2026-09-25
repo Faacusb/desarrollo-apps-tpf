@@ -2,7 +2,7 @@ import { IsNotEmpty, IsPositive, IsNumber } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 
-export class ActulizarValorConsulta{
+export class ActulizarValorConsultaDto{
 
     @ApiProperty({
         description: "Actualizar valores de la consulta",

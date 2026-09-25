@@ -1,8 +1,8 @@
 export enum estadosreservaEnum {
       ACTIVO = 'ACTIVO',
-    ATENDIENDO = 'ATENDIENDO ',
+    ATENDIDO = 'ATENDIDO',
     AUSENTE = 'AUSENTE',
-    CANCELAR ='CANCELADO '
+    CANCELADO ='CANCELADO'
 }
 
 

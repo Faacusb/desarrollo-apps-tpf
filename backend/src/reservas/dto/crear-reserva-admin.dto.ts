@@ -1,5 +1,3 @@
-// Como el admin reserva en nombre de un paciente, este DTO necesita: id_paciente, id_medico, fecha_hora.
-//Validaciones: IDs enteros positivos, formato de fecha válido (@IsDateString()).
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsEnum, IsInt, IsPositive, IsDateString } from "class-validator";
 import { EstadosReservaEnum } from "../../common/enums/estados-reserva.enum.js";
