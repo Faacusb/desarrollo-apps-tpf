@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Reserva } from "./entities/reserva.entity.js";
 import { Medico } from "../medicos/entities/medico.entity.js";
 import { Usuario } from "../usuarios/entities/usuario.entity.js" //todavía no está implementado
-import { ListReservaDTO } from "../dto/output/List-Reserva.dto";
+//import { ListReservaDTO } from "../dto/output/List-Reserva.dto";
 import { ListReservaDto } from "./dto/list-reserva.dto.js";
 import { FindOptionsWhere, Repository, MoreThanOrEqual, LessThanOrEqual, Between } from "typeorm";
 import { EstadosReservaEnum } from "../common/enums/estados-reserva.enum.js";
@@ -21,7 +21,7 @@ export class ReservasService {
 
     async obtenerReservaPacientes(idPaciente: number): Promise<ListReservaDTO[]> {
 
-        const reservas: Reserva[] = await this.repository.find({   where: { idPaciente: idPacientes }, order: { id: "ASC" },});
+        const reservas: Reserva[] = await this.repository.find({   where: { idPaciente: idPaciente }, order: { id: "ASC" },});
 
        const dtoList: ListReservaDTO[] = [];
 
@@ -43,12 +43,12 @@ export class ReservasService {
     const reservas: Reserva[] | null = await this.repository.find({ where: { idPaciente: idPacientes }, order: { id: 'ASC' } });
     const reserva = reservas[0];
 
-    if (reserva.estado === estadosreservaEnum.ACTIVO) {
+    if (reserva.estado === EstadosReservaEnum.ACTIVO) {
       throw new BadRequestException("La Reserva NO esta activa");
     }
 
  const ahora = new Date();
-    const fechaReserva = new Date(reserva.fecha_hora);
+    const fechaReserva = new Date(reserva.fechaHora);
     const diaAnterior = new Date(fechaReserva);
     diaAnterior.setDate(diaAnterior.getDate() - 1);
 
@@ -59,7 +59,7 @@ export class ReservasService {
     }
 
     
-    reserva.estado = estadosreservaEnum.CANCELAR;
+    reserva.estado = EstadosReservaEnum.CANCELADO;
     await this.repository.save(reserva);
     }
 
@@ -129,7 +129,7 @@ export class ReservasService {
 
         const reservas: Reserva[] = await this.repository.find({ relations: {paciente: true, medico: true}, order: { id: 'ASC' }, where: whereFiltro });
 
-        const dtoListAdmin: ListReservaDTO[] = [];
+        const dtoListAdmin: ListReservaDto[] = [];
 
         for(const r of reservas) {
             const dto = new ListReservaDto();

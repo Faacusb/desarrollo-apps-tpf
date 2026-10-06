@@ -5,5 +5,5 @@ import { OneToMany } from "typeorm"
 
 
     //para cuando se haga agregar esto al final
-    @OneToMany('Reserva', (reserva: Reserva) => reserva.paciente)
-    reservas!: Reserva[];
+    //@OneToMany('Reserva', (reserva: Reserva) => reserva.paciente)
+    //reservas!: Reserva[];
