@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { EstadosReservaEnum } from "../../common/enums/estados-reserva.enum.js";
 import type { Medico } from "../../medicos/entities/medico.entity.js"
-//import type { Usuario } from "../../usuarios/entities/usuario.entity.js"
+import type { Usuario } from "../../usuarios/entities/usuario.entity.js"
 
 
 
@@ -27,9 +27,9 @@ export class Reserva {
     @ManyToOne("Medico", (medico: Medico) => medico.reservas)
     @JoinColumn({ name: "id_medico" })
     medico: Medico;
-
-    //@ManyToOne("Usuario", (usuario: Usuario) => usuario.reservas)
-    //@JoinColumn({ name: "id_paciente" })
-    //paciente: Usuario;
+    
+    @ManyToOne("Usuario", (usuario: Usuario) => usuario.reservas)
+    @JoinColumn({ name: "id_paciente" })
+    paciente: Usuario;
 }
 
