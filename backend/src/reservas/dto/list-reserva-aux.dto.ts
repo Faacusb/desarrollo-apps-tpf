@@ -14,7 +14,7 @@ export class ListPacienteDto{
     apellidos!: string; 
 
     @ApiProperty()
-    correoElectronico!: string;
+    email!: string;
 
 }
 

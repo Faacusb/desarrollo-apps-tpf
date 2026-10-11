@@ -1,15 +1,28 @@
-import { BadRequestException, Inject, Injectable, forwardRef, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, forwardRef, NotFoundException, ConflictException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Reserva } from "./entities/reserva.entity.js";
 import { Medico } from "../medicos/entities/medico.entity.js";
 import { Usuario } from "../usuarios/entities/usuario.entity.js" //todavía no está implementado
-//import { ListReservaDTO } from "../dto/output/List-Reserva.dto";
 import { ListReservaDto } from "./dto/list-reserva.dto.js";
 import { FindOptionsWhere, Repository, MoreThanOrEqual, LessThanOrEqual, Between } from "typeorm";
 import { EstadosReservaEnum } from "../common/enums/estados-reserva.enum.js";
 import { FiltrarReservasDto } from "./dto/filtrar-reservas.dto.js";
 import { ListMedicoDto, ListPacienteDto } from "./dto/list-reserva-aux.dto.js";
 import { CrearReservaAdminDto } from "./dto/crear-reserva-admin.dto.js";
+
+const HORARIOS_DISPONIBLES = [
+  '08:00',
+  '09:00',
+  '10:00',
+  '11:00',
+  '12:00',
+  '13:00',
+  '14:00',
+  '15:00',
+];
+
+const VALOR_CONSULTA = 5000;
+const MAX_DIAS_ANTICIPACION = 30;
 
 
 
@@ -19,18 +32,113 @@ export class ReservasService {
         @InjectRepository(Medico) private readonly repositoryMedico: Repository<Medico>,
         @InjectRepository(Usuario) private readonly repositoryUsuario: Repository<Usuario>) { }
 
-    async obtenerReservaPacientes(idPaciente: number): Promise<ListReservaDTO[]> {
+    async create(datos: CrearReservaAdminDto): Promise<Reserva> {
+        const { fechaHora, idMedico, idPaciente } = datos;
+        const fechaElegida = this.parsearFecha(fechaHora);
+    
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+    
+        if (fechaElegida < hoy) {
+          throw new BadRequestException(
+            'No se pueden reservar fechas pasadas',
+          );
+        }
+    
+        const limite = new Date(hoy);
+        limite.setDate(limite.getDate() + MAX_DIAS_ANTICIPACION);
+    
+        if (fechaElegida > limite) {
+          throw new BadRequestException(
+            `Solo se permiten reservas con hasta ${MAX_DIAS_ANTICIPACION} días de anticipación`,
+          );
+        }
+    
+        if (!HORARIOS_DISPONIBLES.includes(hora)) {
+          throw new BadRequestException(
+            'El horario debe estar entre las 08:00 y las 15:00, en intervalos de una hora',
+          );
+        }
+    
+        const ocupadoMedico = await this.repository.findOne({
+          where: { fechaHora, idMedico },
+        });
+    
+        if (ocupadoMedico) {
+          throw new ConflictException('Horario ocupado por el médico');
+        }
+    
+        const ocupadoPaciente = await this.repository.findOne({
+          where: { fechaHora, idPaciente },
+        });
+    
+        if (ocupadoPaciente) {
+          throw new ConflictException('Ya tienes una reserva en este horario');
+        }
+    
+        return this.repository.save({
+          ...datos,
+          valorConsulta: VALOR_CONSULTA,
+        });
+      }
+    
+    async obtenerHorarios(
+        fechaHora: string,
+        idMedico: number,
+      ): Promise<{ fechaHora: string; idMedico: number; disponibles: string[] }> {
+        const reservas = await this.repository.find({
+          where: { fechaHora, idMedico },
+          select: { hora: true },
+        });
+    
+        const ocupadas = new Set(reservas.map(({ hora }) => hora));
+    
+        return {
+          fecha,
+          medicoId,
+          disponibles: HORARIOS_DISPONIBLES.filter((hora) => !ocupadas.has(hora)),
+        };
+      }
+    
+    async listarTodo(): Promise<Reserva[]> {
+        return this.repository.find({
+          order: { fecha: 'ASC', hora: 'ASC' },
+        });
+      }
+    
+      private parsearFecha(fecha: string): Date {
+        const fechaElegida = new Date(`${fecha}T00:00:00`);
+    
+        if (Number.isNaN(fechaElegida.getTime())) {
+          throw new BadRequestException('La fecha proporcionada no es válida');
+        }
+    
+        return fechaElegida;
+    }
+    
+    
+    
+    
+    async obtenerReservaPacientes(idPaciente: number): Promise<ListReservaDto[]> {
 
-        const reservas: Reserva[] = await this.repository.find({   where: { idPaciente: idPaciente }, order: { id: "ASC" },});
+      const reservas: Reserva[] = await this.repository.find({ where: { paciente: true}, order: { id: "ASC" },});
+      
+      const paciente: Usuario | null = await this.repositoryUsuario.findOneBy({ id: idPaciente });
+        if (!paciente) {
+            throw new NotFoundException("El paciente no existe");
+        }
+      const dtoList: ListReservaDto[] = [];
 
-       const dtoList: ListReservaDTO[] = [];
-
-    for (const p of reservas) {
-      const dto = new ListReservaDTO();
+      for (const p of reservas) {
+      const dto = new ListReservaDto();
       dto.id = p.id;
-      dto.nombre = p.nombre;
-      dto.fecha_hora = p.fecha_hora;
-      dto.correoElectronico = p.correoElectronico;
+      if(p.paciente) {
+          dto.paciente = new ListPacienteDto();
+          dto.paciente.id = p.paciente.id;
+          dto.paciente.nombres = p.paciente.nombres;
+          dto.paciente.apellidos = p.paciente.apellidos;
+          dto.paciente.email = p.paciente.email;
+        }
       dto.estado = p.estado;
       dtoList.push(dto);
     }
@@ -39,18 +147,23 @@ export class ReservasService {
   }
 
 
-  async CancelarReservaPaciente(idPacientes: number): Promise<void> {
-    const reservas: Reserva[] | null = await this.repository.find({ where: { idPaciente: idPacientes }, order: { id: 'ASC' } });
+  async cancelarReservaPaciente(idPaciente: number): Promise<void> {
+    const reservas: Reserva[] | null = await this.repository.find({  relations: {paciente: true}, order: { id: 'ASC' } });
     const reserva = reservas[0];
+    
+    const paciente: Usuario | null = await this.repositoryUsuario.findOneBy({ id: idPaciente });
+        if (!paciente) {
+            throw new NotFoundException("El paciente no existe");
+        }
 
     if (reserva.estado === EstadosReservaEnum.ACTIVO) {
       throw new BadRequestException("La Reserva NO esta activa");
     }
 
- const ahora = new Date();
-    const fechaReserva = new Date(reserva.fechaHora);
-    const diaAnterior = new Date(fechaReserva);
-    diaAnterior.setDate(diaAnterior.getDate() - 1);
+    const ahora = new Date();
+      const fechaReserva = new Date(reserva.fechaHora);
+      const diaAnterior = new Date(fechaReserva);
+      diaAnterior.setDate(diaAnterior.getDate() - 1);
 
     if (ahora > diaAnterior) {
       throw new BadRequestException(
@@ -142,7 +255,7 @@ export class ReservasService {
                 dto.paciente.id = r.paciente.id;
                 dto.paciente.nombres = r.paciente.nombres;
                 dto.paciente.apellidos = r.paciente.apellidos;
-                dto.paciente.correoElectronico = r.paciente.correoElectronico;
+                dto.paciente.email = r.paciente.email;
             }
             
             if(r.medico) {

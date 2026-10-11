@@ -31,5 +31,13 @@ export class Reserva {
     @ManyToOne("Usuario", (usuario: Usuario) => usuario.reservas)
     @JoinColumn({ name: "id_paciente" })
     paciente: Usuario;
+
+    @Column({
+    name: 'valor_consulta',
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+  })
+    valorConsulta!: number;
 }
 
