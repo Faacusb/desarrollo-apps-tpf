@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-//no implementado: import { AuthModule } from './modules/auth/auth.module.js';
+import { AuthModule } from './auth/auth.module.js';
 import { MedicosModule } from './medicos/medicos.module.js';
 import { ReservasModule } from './reservas/reservas.module.js';
 import { UsuariosModule } from './usuarios/usuarios.module.js';
@@ -22,7 +22,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       logging: process.env.DB_LOGGING === 'true',
       logger: 'advanced-console',
     }),
-      //AuthModule,
+      AuthModule,
       UsuariosModule,
       MedicosModule,
       ReservasModule],
