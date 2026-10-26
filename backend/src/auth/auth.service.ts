@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Usuario } from '../usuarios/entities/usuario.entity.js';
 import { UsuariosService } from '../usuarios/usuarios.service.js';
-import { EstadosUsuarioEnum } from '../common/enums/estados-usuario.enum.js';
 import { LoginDto } from './dto/login.dto.js';
 
 @Injectable()
@@ -18,7 +17,7 @@ export class AuthService {
   ) {}
 
   async login(dto: LoginDto): Promise<{ accessToken: string}> {
-
+  
     const usuario = await this.usuariosService.buscarUsuarioActivoPorEmail(dto.email);
 
     if (!usuario) {

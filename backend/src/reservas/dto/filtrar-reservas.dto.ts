@@ -3,6 +3,7 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { IsEnum, IsOptional, IsNotEmpty, IsInt, IsPositive, IsDateString } from "class-validator";
 import { EstadosReservaEnum } from "../../common/enums/estados-reserva.enum.js";
+import { Transform } from "class-transformer";
 
 export class FiltrarReservasDto{
     
@@ -17,7 +18,7 @@ export class FiltrarReservasDto{
 
     @ApiPropertyOptional({description: 'Filtrar turnos por médico'})
     @IsOptional()
-    @IsNotEmpty()
+    @Transform(({ value }) => parseInt(value, 10)) 
     @IsInt()
     @IsPositive()
     idMedico?: number;

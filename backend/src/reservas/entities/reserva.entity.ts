@@ -5,20 +5,14 @@ import type { Usuario } from "../../usuarios/entities/usuario.entity.js"
 
 
 
-@Entity({ name: "Reserva" })
+@Entity({ name: "reservas" })
 export class Reserva {
 
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column()
-    nombre!: string;
-
     @Column({ name: 'fecha_hora' })
     fechaHora!: Date;
-
-    //@Column({ name: 'correo_electronico', nullable: true, length: 100 }) --> va para usuarios o la list de una reserva
-    //correoElectronico!: string;
 
     @Column({ type: 'enum', enum: EstadosReservaEnum })
     estado!: EstadosReservaEnum;
@@ -32,12 +26,7 @@ export class Reserva {
     @JoinColumn({ name: "id_paciente" })
     paciente: Usuario;
 
-    @Column({
-    name: 'valor_consulta',
-    type: 'decimal',
-    precision: 10,
-    scale: 2,
-  })
-    valorConsulta!: number;
+    @Column({ name: 'valor_consulta', type: 'int' })
+    valorConsulta!: number; 
 }
 

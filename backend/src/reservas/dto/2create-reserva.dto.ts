@@ -11,9 +11,9 @@ export class CreateReservaDto {
 
   @IsInt()
   @IsNotEmpty()
-  medicoId: number;
+  idMedico: number;
 
   @IsInt()
   @IsNotEmpty()
-  pacienteId: number;
+  idPaciente: number;
 }

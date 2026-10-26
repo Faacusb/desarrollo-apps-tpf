@@ -9,6 +9,7 @@ import { EstadosReservaEnum } from "../common/enums/estados-reserva.enum.js";
 import { FiltrarReservasDto } from "./dto/filtrar-reservas.dto.js";
 import { ListMedicoDto, ListPacienteDto } from "./dto/list-reserva-aux.dto.js";
 import { CrearReservaAdminDto } from "./dto/crear-reserva-admin.dto.js";
+import { CreateReservaDto } from "./dto/2create-reserva.dto.js";
 
 const HORARIOS_DISPONIBLES = [
   '08:00',
@@ -21,7 +22,7 @@ const HORARIOS_DISPONIBLES = [
   '15:00',
 ];
 
-const VALOR_CONSULTA = 5000;
+
 const MAX_DIAS_ANTICIPACION = 30;
 
 
@@ -32,9 +33,10 @@ export class ReservasService {
         @InjectRepository(Medico) private readonly repositoryMedico: Repository<Medico>,
         @InjectRepository(Usuario) private readonly repositoryUsuario: Repository<Usuario>) { }
 
-    async create(datos: CrearReservaAdminDto): Promise<Reserva> {
-        const { fechaHora, idMedico, idPaciente } = datos;
-        const fechaElegida = this.parsearFecha(fechaHora);
+    async create(datos: CreateReservaDto): Promise<Reserva> {
+        const { fecha,hora, idMedico, idPaciente } = datos;
+
+        const fechaElegida = this.parsearFecha(fecha);
     
         const hoy = new Date();
         hoy.setHours(0, 0, 0, 0);
@@ -56,107 +58,103 @@ export class ReservasService {
     
         if (!HORARIOS_DISPONIBLES.includes(hora)) {
           throw new BadRequestException(
-            'El horario debe estar entre las 08:00 y las 15:00, en intervalos de una hora',
+            'El horario debe estar entre las 08:00 y las 15:00',
           );
         }
-    
+        
+        // Combinar fecha y hora en datetime
+        const [h, m] = hora.split(':').map(Number);
+        const fechaHora = new Date(fechaElegida);
+        fechaHora.setHours(h, m, 0, 0);
+
+        // Verificar medico y paciente existen
+        const medico = await this.repositoryMedico.findOneBy({ id: idMedico });
+        if (!medico) throw new NotFoundException('Médico no encontrado');
+        
+        const paciente = await this.repositoryUsuario.findOneBy({ id: idPaciente });
+        if (!paciente) throw new NotFoundException('Paciente no encontrado');
+
+        //Verificar disponibilidad fecha y hora, que este activo
         const ocupadoMedico = await this.repository.findOne({
-          where: { fechaHora, idMedico },
+          where: { fechaHora, medico: {id: idMedico }, estado: EstadosReservaEnum.ACTIVO },
         });
     
-        if (ocupadoMedico) {
-          throw new ConflictException('Horario ocupado por el médico');
-        }
+        if (ocupadoMedico) throw new ConflictException('Horario ocupado por el médico');
     
         const ocupadoPaciente = await this.repository.findOne({
-          where: { fechaHora, idPaciente },
+          where: { fechaHora, paciente: {id: idPaciente }, estado: EstadosReservaEnum.ACTIVO },
         });
     
-        if (ocupadoPaciente) {
-          throw new ConflictException('Ya tienes una reserva en este horario');
-        }
-    
-        return this.repository.save({
-          ...datos,
-          valorConsulta: VALOR_CONSULTA,
+        if (ocupadoPaciente) throw new ConflictException('Ya tienes una reserva en este horario');
+        
+        //Crear reserva congelando el valor de la consulta
+        const reserva = this.repository.create({
+          fechaHora,
+          medico,
+          paciente,
+          estado: EstadosReservaEnum.ACTIVO,
+          valorConsulta: medico.valorConsulta, // Congela el valor de la consulta
         });
+
+        return this.repository.save(reserva);
       }
     
     async obtenerHorarios(
-        fechaHora: string,
+        fecha: string,
         idMedico: number,
-      ): Promise<{ fechaHora: string; idMedico: number; disponibles: string[] }> {
+      ) {
+        const fechaDate = this.parsearFecha(fecha);
+        const inicioDia = new Date(fechaDate); 
+        inicioDia.setHours(0, 0, 0, 0);
+        const finDia = new Date(fechaDate);
+        finDia.setHours(23, 59, 59, 999);
+
         const reservas = await this.repository.find({
-          where: { fechaHora, idMedico },
-          select: { hora: true },
+          where: {
+            medico: { id: idMedico },
+            fechaHora: Between(inicioDia, finDia),
+            estado: EstadosReservaEnum.ACTIVO,
+          },
+          select: {fechaHora: true},
         });
-    
-        const ocupadas = new Set(reservas.map(({ hora }) => hora));
-    
+
+        const ocupadas = new Set(reservas.map(r => {
+          const hh = r.fechaHora.getHours().toString().padStart(2, '0');
+          const mm = r.fechaHora.getMinutes().toString().padStart(2, '0');
+          return `${hh}:${mm}`;
+        }));
+
         return {
           fecha,
-          medicoId,
+          medicoId: idMedico,
           disponibles: HORARIOS_DISPONIBLES.filter((hora) => !ocupadas.has(hora)),
         };
       }
     
-    async listarTodo(): Promise<Reserva[]> {
-        return this.repository.find({
-          order: { fecha: 'ASC', hora: 'ASC' },
-        });
-      }
-    
-      private parsearFecha(fecha: string): Date {
-        const fechaElegida = new Date(`${fecha}T00:00:00`);
-    
-        if (Number.isNaN(fechaElegida.getTime())) {
-          throw new BadRequestException('La fecha proporcionada no es válida');
-        }
-    
-        return fechaElegida;
-    }
-    
-    
-    
     
     async obtenerReservaPacientes(idPaciente: number): Promise<ListReservaDto[]> {
 
-      const reservas: Reserva[] = await this.repository.find({ where: { paciente: true}, order: { id: "ASC" },});
-      
-      const paciente: Usuario | null = await this.repositoryUsuario.findOneBy({ id: idPaciente });
-        if (!paciente) {
-            throw new NotFoundException("El paciente no existe");
-        }
-      const dtoList: ListReservaDto[] = [];
+      const paciente = await this.repositoryUsuario.findOneBy({ id: idPaciente });
+      if (!paciente) throw new NotFoundException('El paciente no existe');
 
-      for (const p of reservas) {
-      const dto = new ListReservaDto();
-      dto.id = p.id;
-      if(p.paciente) {
-          dto.paciente = new ListPacienteDto();
-          dto.paciente.id = p.paciente.id;
-          dto.paciente.nombres = p.paciente.nombres;
-          dto.paciente.apellidos = p.paciente.apellidos;
-          dto.paciente.email = p.paciente.email;
-        }
-      dto.estado = p.estado;
-      dtoList.push(dto);
+      const reservas = await this.repository.find({
+        where: { paciente: { id: idPaciente } },
+        relations: { medico: true },
+        order: { fechaHora: 'ASC' },
+    });
+      
+      
+      return reservas.map(r => this.mapToListReservaDto(r));
     }
 
-    return dtoList;
-  }
 
+  async cancelarReservaPaciente(idReserva: number): Promise<void> {
+    const reserva = await this.repository.findOne({  where: { id: idReserva }, relations: { paciente: true }
+    });
 
-  async cancelarReservaPaciente(idPaciente: number): Promise<void> {
-    const reservas: Reserva[] | null = await this.repository.find({  relations: {paciente: true}, order: { id: 'ASC' } });
-    const reserva = reservas[0];
-    
-    const paciente: Usuario | null = await this.repositoryUsuario.findOneBy({ id: idPaciente });
-        if (!paciente) {
-            throw new NotFoundException("El paciente no existe");
-        }
+    if (!reserva) throw new NotFoundException('Reserva no encontrada');
 
-    if (reserva.estado === EstadosReservaEnum.ACTIVO) {
+    if (reserva.estado !== EstadosReservaEnum.ACTIVO) {
       throw new BadRequestException("La Reserva NO esta activa");
     }
 
@@ -164,6 +162,7 @@ export class ReservasService {
       const fechaReserva = new Date(reserva.fechaHora);
       const diaAnterior = new Date(fechaReserva);
       diaAnterior.setDate(diaAnterior.getDate() - 1);
+      diaAnterior.setHours(23,59,59,999);
 
     if (ahora > diaAnterior) {
       throw new BadRequestException(
@@ -209,6 +208,7 @@ export class ReservasService {
         reserva.paciente = paciente;   // Le asignás la entidad Usuario completa
         reserva.fechaHora = fecha;
         reserva.estado = EstadosReservaEnum.ACTIVO;
+        reserva.valorConsulta = medico.valorConsulta; // Congela el valor de la consulta
 
         await this.repository.save(reserva);
         return { id: reserva.id };
@@ -245,29 +245,9 @@ export class ReservasService {
         const dtoListAdmin: ListReservaDto[] = [];
 
         for(const r of reservas) {
-            const dto = new ListReservaDto();
-            dto.id = r.id;
-            dto.fechaHora = r.fechaHora;
-            dto.estado = r.estado;
-
-            if(r.paciente) {
-                dto.paciente = new ListPacienteDto();
-                dto.paciente.id = r.paciente.id;
-                dto.paciente.nombres = r.paciente.nombres;
-                dto.paciente.apellidos = r.paciente.apellidos;
-                dto.paciente.email = r.paciente.email;
-            }
-            
-            if(r.medico) {
-                dto.medico = new ListMedicoDto();
-                dto.medico.id = r.medico.id;
-                dto.medico.matricula = r.medico.matricula;
-                dto.medico.valorConsulta = r.medico.valorConsulta;
-            }
-            
-            dtoListAdmin.push(dto);
+          dtoListAdmin.push(this.mapToListReservaDto(r));
         }
-
+   
         return dtoListAdmin;
 
     }
@@ -287,6 +267,47 @@ export class ReservasService {
         
         reserva.estado = EstadosReservaEnum.CANCELADO;
         await this.repository.save(reserva!);
+    }
+
+    //helpers
+    private parsearFecha(fecha: string): Date {
+      const fechaElegida = new Date(`${fecha}T00:00:00`);
+    
+      if (Number.isNaN(fechaElegida.getTime())) {
+        throw new BadRequestException('La fecha proporcionada no es válida');
+      }
+    
+      return fechaElegida;
+    }
+
+    private mapToListReservaDto(r: Reserva): ListReservaDto {
+
+      const dto = new ListReservaDto();
+
+      dto.id = r.id; 
+      dto.fechaHora = r.fechaHora;
+      dto.estado = r.estado;
+
+      if (r.paciente) { 
+
+        dto.paciente = new ListPacienteDto(); 
+        dto.paciente.id = r.paciente.id; 
+        dto.paciente.nombres = r.paciente.nombres; 
+        dto.paciente.apellidos = r.paciente.apellidos; 
+        dto.paciente.email = r.paciente.email; 
+
+      }
+
+      if (r.medico) { 
+
+        dto.medico = new ListMedicoDto();
+        dto.medico.id = r.medico.id; 
+        dto.medico.matricula = r.medico.matricula; 
+        dto.medico.valorConsulta = r.medico.valorConsulta; 
+
+      }
+
+      return dto;
     }
 }
 
