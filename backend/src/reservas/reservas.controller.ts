@@ -60,8 +60,8 @@ import { RolesUsuarioEnum } from "../common/enums/roles.enum.js";
 
     // ---- ADMIN ----
     //endpoint admin crear reserva
-    //@Roles(RolesUsuarioEnum.ADMINISTRADOR)
-    //@UseGuards(AuthGuard)
+    @Roles(RolesUsuarioEnum.ADMINISTRADOR)
+    @UseGuards(AuthGuard)
     @ApiBearerAuth()
     @Post()
     async crearReservaAdmin(@Body() dto: CrearReservaAdminDto): Promise<{ id: number }> {
@@ -69,8 +69,8 @@ import { RolesUsuarioEnum } from "../common/enums/roles.enum.js";
     }
 
     //endpoint admin obtener reserva
-    //@Roles(RolesUsuarioEnum.ADMINISTRADOR)
-    //@UseGuards(AuthGuard)
+    @Roles(RolesUsuarioEnum.ADMINISTRADOR)
+    @UseGuards(AuthGuard)
     @ApiBearerAuth()
     @Get()
     async obtenerTodasLasReservas(@Query() filtros: FiltrarReservasDto): Promise<ListReservaDto[]> {
