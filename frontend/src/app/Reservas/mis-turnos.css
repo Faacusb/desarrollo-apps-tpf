@@ -1,0 +1,58 @@
+.contenedor {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  color: #174a75;
+}
+
+.turno {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #fff;
+}
+
+.estado {
+  font-weight: bold;
+}
+
+.activo {
+  color: #198754;
+}
+
+.atendido {
+  color: #0d6efd;
+}
+
+.ausente {
+  color: #dc3545;
+}
+
+.cancelado {
+  color: #6c757d;
+}
+
+.btn-cancelar {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #dc3545;
+  color: white;
+  cursor: pointer;
+}
+
+.btn-cancelar:hover {
+  background-color: #b02a37;
+}
+
+.vacio {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f1f3f5;
+  border-radius: 8px;
+}

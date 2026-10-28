@@ -1,0 +1,66 @@
+<main class="contenedor">
+  <h1>Mis Turnos</h1>
+
+  <p-table [value]="turnos">
+    <ng-template #header>
+      <tr>
+        <th>Médico</th>
+        <th>Fecha y hora</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-turno>
+      <tr>
+        <td>{{ turno.medico }}</td>
+
+        <td>
+          {{ turno.fechaHora | date:'dd/MM/yyyy HH:mm' }}
+        </td>
+
+        <td>
+          <span
+            class="estado"
+            [ngClass]="turno.estado.toLowerCase()">
+            {{ turno.estado }}
+          </span>
+        </td>
+
+        <td>
+          @if (puedeCancelar(turno)) {
+            <p-button
+              label="Cancelar"
+              severity="danger"
+              (onClick)="abrirConfirmacion(turno)" />
+          }
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  @if (turnos.length === 0) {
+    <p class="vacio">No tenés turnos reservados.</p>
+  }
+
+  <p-dialog
+    header="Cancelar turno"
+    [modal]="true"
+    [visible]="visible()"
+    (onHide)="cerrarDialog()">
+
+    @if (turnoSeleccionado) {
+      <p>¿Querés cancelar este turno?</p>
+
+      <p-button
+        label="Volver"
+        severity="secondary"
+        (onClick)="cerrarDialog()" />
+
+      <p-button
+        label="Confirmar cancelación"
+        severity="danger"
+        (onClick)="confirmarCancelacion()" />
+    }
+  </p-dialog>
+</main>
