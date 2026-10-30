@@ -37,6 +37,22 @@ export class MedicosService {
         await this.repository.save(medico);
     }
 
+    // Obtener el médico asociado al usuario autenticado
+    async obtenerMedicoPorUsuario(idUsuario: number): Promise<Medico> {
+
+        const medico = await this.repository.findOneBy({
+            idUsuario: idUsuario
+        });
+
+        if (!medico) {
+            throw new NotFoundException(
+                "No existe un médico asociado al usuario autenticado"
+            );
+        }
+
+        return medico;
+    }
+
     // Método obtener agenda MEDICO
     async obtenerAgenda(
         idMedico: number,

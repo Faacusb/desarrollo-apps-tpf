@@ -1,0 +1,174 @@
+
+<main class="contenedor">
+
+    <h1>Agenda Médica</h1>
+
+    <p>Consultá tus turnos y registrá la asistencia de los pacientes.</p>
+
+    <!-- Filtro por fecha -->
+    <div class="filtro-fecha">
+
+        <label for="fecha">Seleccionar fecha:</label>
+
+        <input
+            type="date"
+            id="fecha"
+            name="fecha"
+            [(ngModel)]="fechaSeleccionada"
+        />
+
+        <p-button
+            label="Consultar agenda"
+            (onClick)="consultarAgenda()"
+            [disabled]="!fechaSeleccionada || cargando"
+            [loading]="cargando"
+        />
+
+    </div>
+
+    <!-- Indicador de carga -->
+    @if (cargando) {
+        <p class="mensaje" role="status">
+            Cargando turnos...
+        </p>
+    }
+
+    <!-- Mensaje de error -->
+    @if (mensajeError) {
+        <p class="mensaje-error" role="alert">
+            {{ mensajeError }}
+        </p>
+    }
+
+    <!-- Mensaje de operación exitosa -->
+    @if (mensajeExito) {
+        <p class="mensaje-exito" role="status">
+            {{ mensajeExito }}
+        </p>
+    }
+
+    <!-- Mensaje cuando no hay turnos -->
+    @if (consultaRealizada && !cargando && turnos.length === 0 && !mensajeError) {
+        <p class="vacio">
+            No tenés turnos registrados para la fecha seleccionada.
+        </p>
+    }
+
+    <!-- Tabla de turnos -->
+    @if (turnos.length > 0) {
+
+        <p-table [value]="turnos">
+
+            <ng-template #header>
+                <tr>
+                    <th>Fecha y hora</th>
+                    <th>Paciente</th>
+                    <th>Documento</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </ng-template>
+
+            <ng-template #body let-turno>
+                <tr>
+                    <td>
+                        {{ turno.fechaHora | date:'dd/MM/yyyy HH:mm' }}
+                    </td>
+
+                    <td>
+                        {{ turno.paciente?.apellidos }},
+                        {{ turno.paciente?.nombres }}
+                    </td>
+
+                    <td>
+                        {{ turno.paciente?.documento }}
+                    </td>
+
+                    <td>
+                        <span
+                            class="estado"
+                            [ngClass]="turno.estado.toLowerCase()">
+                            {{ turno.estado }}
+                        </span>
+                    </td>
+
+                    <td>
+                        @if (turno.estado === 'ACTIVO') {
+
+                            <div class="acciones">
+
+                                <p-button
+                                    label="Atendido"
+                                    severity="success"
+                                    (onClick)="abrirConfirmacion(turno, 'ATENDIDO')"
+                                    [disabled]="guardandoAsistencia"
+                                />
+
+                                <p-button
+                                    label="Ausente"
+                                    severity="danger"
+                                    (onClick)="abrirConfirmacion(turno, 'AUSENTE')"
+                                    [disabled]="guardandoAsistencia"
+                                />
+
+                            </div>
+
+                        } @else {
+                            <span>—</span>
+                        }
+                    </td>
+                </tr>
+            </ng-template>
+
+        </p-table>
+
+    }
+
+    <!-- Ventana de confirmación -->
+    <p-dialog
+        header="Confirmar asistencia"
+        [modal]="true"
+        [(visible)]="dialogoVisible"
+        (onHide)="cerrarConfirmacion()"
+        [closable]="!guardandoAsistencia"
+        [closeOnEscape]="!guardandoAsistencia"
+        [dismissableMask]="false"
+        [style]="{ width: '28rem', maxWidth: '95vw' }"
+    >
+
+        @if (turnoSeleccionado && estadoSeleccionado) {
+
+            <p>
+                ¿Querés marcar al paciente
+                <strong>
+                    {{ turnoSeleccionado.paciente?.nombres }}
+                    {{ turnoSeleccionado.paciente?.apellidos }}
+                </strong>
+                como
+                <strong>{{ estadoSeleccionado }}</strong>?
+            </p>
+
+            <div class="acciones-dialogo">
+
+                <p-button
+                    label="Volver"
+                    severity="secondary"
+                    (onClick)="cerrarConfirmacion()"
+                    [disabled]="guardandoAsistencia"
+                />
+
+                <p-button
+                    label="Confirmar"
+                    severity="success"
+                    (onClick)="confirmarAsistencia()"
+                    [loading]="guardandoAsistencia"
+                    [disabled]="guardandoAsistencia"
+                />
+
+            </div>
+
+        }
+
+    </p-dialog>
+
+</main>
