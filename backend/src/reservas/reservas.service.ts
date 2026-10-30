@@ -8,7 +8,6 @@ import { FindOptionsWhere, Repository, MoreThanOrEqual, LessThanOrEqual, Between
 import { EstadosReservaEnum } from "../common/enums/estados-reserva.enum.js";
 import { FiltrarReservasDto } from "./dto/filtrar-reservas.dto.js";
 import { ListMedicoDto, ListPacienteDto } from "./dto/list-reserva-aux.dto.js";
-import { CrearReservaAdminDto } from "./dto/crear-reserva-admin.dto.js";
 import { CreateReservaDto } from "./dto/2create-reserva.dto.js";
 
 const HORARIOS_DISPONIBLES = [
@@ -34,70 +33,85 @@ export class ReservasService {
         @InjectRepository(Usuario) private readonly repositoryUsuario: Repository<Usuario>) { }
 
     async create(datos: CreateReservaDto): Promise<Reserva> {
-        const { fecha,hora, idMedico, idPaciente } = datos;
-
-        const fechaElegida = this.parsearFecha(fecha);
-    
-        const hoy = new Date();
-        hoy.setHours(0, 0, 0, 0);
-    
-        if (fechaElegida < hoy) {
-          throw new BadRequestException(
-            'No se pueden reservar fechas pasadas',
-          );
-        }
-    
-        const limite = new Date(hoy);
-        limite.setDate(limite.getDate() + MAX_DIAS_ANTICIPACION);
-    
-        if (fechaElegida > limite) {
-          throw new BadRequestException(
-            `Solo se permiten reservas con hasta ${MAX_DIAS_ANTICIPACION} días de anticipación`,
-          );
-        }
-    
-        if (!HORARIOS_DISPONIBLES.includes(hora)) {
-          throw new BadRequestException(
-            'El horario debe estar entre las 08:00 y las 15:00',
-          );
-        }
-        
-        // Combinar fecha y hora en datetime
-        const [h, m] = hora.split(':').map(Number);
-        const fechaHora = new Date(fechaElegida);
-        fechaHora.setHours(h, m, 0, 0);
-
-        // Verificar medico y paciente existen
-        const medico = await this.repositoryMedico.findOneBy({ id: idMedico });
-        if (!medico) throw new NotFoundException('Médico no encontrado');
-        
-        const paciente = await this.repositoryUsuario.findOneBy({ id: idPaciente });
-        if (!paciente) throw new NotFoundException('Paciente no encontrado');
-
-        //Verificar disponibilidad fecha y hora, que este activo
-        const ocupadoMedico = await this.repository.findOne({
-          where: { fechaHora, medico: {id: idMedico }, estado: EstadosReservaEnum.ACTIVO },
-        });
-    
-        if (ocupadoMedico) throw new ConflictException('Horario ocupado por el médico');
-    
-        const ocupadoPaciente = await this.repository.findOne({
-          where: { fechaHora, paciente: {id: idPaciente }, estado: EstadosReservaEnum.ACTIVO },
-        });
-    
-        if (ocupadoPaciente) throw new ConflictException('Ya tienes una reserva en este horario');
-        
-        //Crear reserva congelando el valor de la consulta
-        const reserva = this.repository.create({
-          fechaHora,
-          medico,
-          paciente,
-          estado: EstadosReservaEnum.ACTIVO,
-          valorConsulta: medico.valorConsulta, // Congela el valor de la consulta
-        });
-
-        return this.repository.save(reserva);
+        return this.crearReservaValidada(datos);
       }
+    
+    //metodo para que el admin haga la reserva
+    async crearReservaAdmin(datos: CreateReservaDto): Promise<{ id: number }> {
+      const reserva = await this.crearReservaValidada(datos);
+      return { id: reserva.id };
+    }
+    
+    private async crearReservaValidada(datos: CreateReservaDto): Promise<Reserva> {
+      const { fecha, hora, idMedico, idPaciente } = datos;
+      const fechaElegida = this.parsearFecha(fecha);
+
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+    
+      if (fechaElegida < hoy) {
+        throw new BadRequestException(
+          'No se pueden reservar fechas pasadas',
+        );
+      }
+    
+      const limite = new Date(hoy);
+      limite.setDate(limite.getDate() + MAX_DIAS_ANTICIPACION);
+    
+      if (fechaElegida > limite) {
+        throw new BadRequestException(
+          `Solo se permiten reservas con hasta ${MAX_DIAS_ANTICIPACION} días de anticipación`,
+        );
+      }
+    
+      if (!HORARIOS_DISPONIBLES.includes(hora)) {
+        throw new BadRequestException(
+          'El horario debe estar entre las 08:00 y las 15:00',
+        );
+      }
+        
+      // Combinar fecha y hora en datetime
+      const [h, m] = hora.split(':').map(Number);
+      const fechaHora = new Date(fechaElegida);
+      fechaHora.setHours(h, m, 0, 0);
+      
+      if(fechaHora <= new Date()){
+        throw new BadRequestException('No se pueden reservar en horarios pasados');
+      }
+
+      // Verificar medico y paciente existen
+      const medico = await this.repositoryMedico.findOneBy({ id: idMedico });
+      if (!medico) throw new NotFoundException('Médico no encontrado');
+        
+      const paciente = await this.repositoryUsuario.findOneBy({ id: idPaciente });
+      if (!paciente) throw new NotFoundException('Paciente no encontrado');
+
+      //Verificar disponibilidad fecha y hora, que este activo
+      const ocupadoMedico = await this.repository.findOne({
+        where: { fechaHora, medico: {id: idMedico }, estado: EstadosReservaEnum.ACTIVO },
+      });
+    
+      if (ocupadoMedico) throw new ConflictException('Horario ocupado por el médico');
+    
+      const ocupadoPaciente = await this.repository.findOne({
+        where: { fechaHora, paciente: {id: idPaciente }, estado: EstadosReservaEnum.ACTIVO },
+      });
+    
+      if (ocupadoPaciente) throw new ConflictException('Ya tienes una reserva en este horario');
+        
+      //Crear reserva congelando el valor de la consulta
+      const reserva = this.repository.create({
+        fechaHora,
+        medico,
+        paciente,
+        estado: EstadosReservaEnum.ACTIVO,
+        valorConsulta: medico.valorConsulta, // Congela el valor de la consulta
+      });
+
+      return this.repository.save(reserva);
+    }
+    
+        
     
     async obtenerHorarios(
         fecha: string,
@@ -173,45 +187,6 @@ export class ReservasService {
     
     reserva.estado = EstadosReservaEnum.CANCELADO;
     await this.repository.save(reserva);
-    }
-
-
-    //metodo para que el admin haga la reserva
-    async crearReservaAdmin(dto: CrearReservaAdminDto): Promise < { id: number } > {
-
-        //verificar que el medico y paciente existen 
-        const paciente: Usuario | null = await this.repositoryUsuario.findOneBy({ id: dto.idPaciente });
-        if (!paciente) {
-            throw new NotFoundException("El paciente no existe");
-        }
-
-        const medico: Medico | null = await this.repositoryMedico.findOneBy({ id: dto.idMedico });
-        if (!medico) {
-            throw new NotFoundException("El medico no existe");
-        }
-
-        //verifico que el medico no tenga reservas activas en esa hora
-        const fecha = new Date(dto.fechaHora);
-        const estaOcupado: Reserva | null = await this.repository.findOne({
-            where: {
-                medico: {id: dto.idMedico },
-                fechaHora: fecha,
-                estado: EstadosReservaEnum.ACTIVO
-            },
-        });
-        if (estaOcupado) {
-            throw new BadRequestException("El medico tiene un turno asignado en este horario.");
-        }
-
-        const reserva = this.repository.create(); //recien ahora creo la reserva, luego de verificar
-        reserva.medico = medico;       // Le asignás la entidad Medico completa
-        reserva.paciente = paciente;   // Le asignás la entidad Usuario completa
-        reserva.fechaHora = fecha;
-        reserva.estado = EstadosReservaEnum.ACTIVO;
-        reserva.valorConsulta = medico.valorConsulta; // Congela el valor de la consulta
-
-        await this.repository.save(reserva);
-        return { id: reserva.id };
     }
     
 

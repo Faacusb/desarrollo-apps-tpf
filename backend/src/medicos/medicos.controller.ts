@@ -51,8 +51,8 @@ export class MedicosController {
 
     // Endpoint modificar tarifa ADMIN
     
-    //@Roles('ADMINISTRADOR')
-    //@UseGuards(AuthGuard)
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(RolesUsuarioEnum.ADMINISTRADOR)
     @ApiBearerAuth()
     @Put(":id")
     async actualizarValorConsulta(
@@ -204,5 +204,14 @@ export class MedicosController {
             idReserva,
             dto.estado
         );
+    }
+
+    @Get("admin")
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(RolesUsuarioEnum.ADMINISTRADOR)
+    @ApiBearerAuth()
+    async obtenerMedicosAdmin() {
+        // Obtener todos los medicos para el admin
+        return await this.service.obtenerMedicosAdmin();
     }
 }

@@ -1,0 +1,189 @@
+<main class="contenedor">
+  <h2>Monitor de Reservas</h2>
+
+  <!-- Filtro por Medico -->
+    <div class="filtro-medico">
+
+        <label for="medico">Seleccionar Medico:</label>
+
+        <input
+            type="number"
+            id="medico"
+            name="medico"
+            [(ngModel)]="Medico"
+        />
+
+        <p-button
+            label="Consultar medicos"
+            (onClick)="consultarAgenda()"
+            [disabled]="!medico || cargando"
+            [loading]="cargando"
+        />
+
+    </div>
+  <!-- Filtro por fecha -->
+    <div class="filtro-fecha">
+
+        <label for="fecha">Seleccionar fecha:</label>
+
+        <input
+            type="date"
+            id="fecha"
+            name="fecha"
+            [(ngModel)]="fechaSeleccionada"
+        />
+
+        <p-button
+            label="Consultar por fecha"
+            (onClick)="consultarAgenda()"
+            [disabled]="!fechaSeleccionada || cargando"
+            [loading]="cargando"
+        />
+
+    </div>
+
+    <!-- Indicador de carga -->
+    @if (cargando) {
+        <p class="mensaje" role="status">
+            Cargando reservas...
+        </p>
+    }
+
+    <!-- Mensaje de error -->
+    @if (mensajeError) {
+        <p class="mensaje-error" role="alert">
+            {{ mensajeError }}
+        </p>
+    }
+
+    <!-- Mensaje de operación exitosa -->
+    @if (mensajeExito) {
+        <p class="mensaje-exito" role="status">
+            {{ mensajeExito }}
+        </p>
+    }
+
+    <!-- Mensaje cuando no hay reservas -->
+    @if (consultaRealizada && !cargando && reservas.length === 0 && !mensajeError) {
+        <p class="vacio">
+            No hay reservas registradas para la fecha seleccionada.
+        </p>
+    }
+
+    <!-- Tabla de reservas -->
+    @if (reservas.length > 0) {
+
+        <p-table [value]="reservas">
+
+            <ng-template #header>
+                <tr>
+                    <th>Fecha y hora</th>
+                    <th>Paciente</th>
+                    <th>Medico</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </ng-template>
+
+            <ng-template #body let-turno>
+                <tr>
+                    <td>
+                        {{ reserva.fechaHora | date:'dd/MM/yyyy HH:mm' }}
+                    </td>
+
+                    <td>
+                        {{ reserva.paciente?.apellidos }},
+                        {{ reserva.paciente?.nombres }}
+                    </td>
+
+                    <td>
+                        {{ reserva.medico?.id }}
+                    </td>
+
+                    <td>
+                        <span
+                            class="estado"
+                            [ngClass]="reserva.estado.toLowerCase()">
+                            {{ reserva.estado }}
+                        </span>
+                    </td>
+
+                    <td>
+                        @if (reserva.estado === 'ACTIVO') {
+
+                            <div class="acciones">
+
+                                <p-button
+                                    label="Atendido"
+                                    severity="success"
+                                    (onClick)="abrirConfirmacion(reserva, 'ATENDIDO')"
+                                    [disabled]="guardandoAsistencia"
+                                />
+
+                                <p-button
+                                    label="Ausente"
+                                    severity="danger"
+                                    (onClick)="abrirConfirmacion(reserva, 'AUSENTE')"
+                                    [disabled]="guardandoAsistencia"
+                                />
+
+                            </div>
+
+                        } @else {
+                            <span>—</span>
+                        }
+                    </td>
+                </tr>
+            </ng-template>
+
+        </p-table>
+
+    }
+
+    <!-- Ventana de confirmación -->
+    <p-dialog
+        header="Confirmar asistencia"
+        [modal]="true"
+        [(visible)]="dialogoVisible"
+        (onHide)="cerrarConfirmacion()"
+        [closable]="!guardandoAsistencia"
+        [closeOnEscape]="!guardandoAsistencia"
+        [dismissableMask]="false"
+        [style]="{ width: '28rem', maxWidth: '95vw' }"
+    >
+
+        @if (reservaSeleccionada && estadoSeleccionado) {
+
+            <p>
+                ¿Querés marcar al paciente
+                <strong>
+                    {{ reservaSeleccionada.paciente?.nombres }}
+                    {{ reservaSeleccionada.paciente?.apellidos }}
+                </strong>
+                como
+                <strong>{{ estadoSeleccionado }}</strong>?
+            </p>
+
+            <div class="acciones-dialogo">
+
+                <p-button
+                    label="Volver"
+                    severity="secondary"
+                    (onClick)="cerrarConfirmacion()"
+                    [disabled]="guardandoAsistencia"
+                />
+
+                <p-button
+                    label="Confirmar"
+                    severity="success"
+                    (onClick)="confirmarAsistencia()"
+                    [loading]="guardandoAsistencia"
+                    [disabled]="guardandoAsistencia"
+                />
+
+            </div>
+
+        }
+
+    </p-dialog>
+</main>
