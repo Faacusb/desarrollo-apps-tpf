@@ -4,10 +4,10 @@ import { ReservasService } from "./reservas.service.js";
 //import { CambiarEstadoDto } from "./dto/cambiar-estado.dto.js";
 import { ListReservaDto } from "./dto/list-reserva.dto.js";
 import { FiltrarReservasDto } from "./dto/filtrar-reservas.dto.js";
-import { CrearReservaAdminDto } from "./dto/crear-reserva-admin.dto.js";
 import { CreateReservaDto } from "./dto/2create-reserva.dto.js";
 import { Roles } from "../auth/decorators/roles.decorator.js";
 import { AuthGuard } from "../auth/guards/auth.guard.js";
+import { RolesGuard } from "../auth/guards/roles.guard.js";
 import { RolesUsuarioEnum } from "../common/enums/roles.enum.js";
 
 @Controller('reservas')
@@ -60,17 +60,17 @@ import { RolesUsuarioEnum } from "../common/enums/roles.enum.js";
 
     // ---- ADMIN ----
     //endpoint admin crear reserva
+    @UseGuards(AuthGuard, RolesGuard)
     @Roles(RolesUsuarioEnum.ADMINISTRADOR)
-    @UseGuards(AuthGuard)
     @ApiBearerAuth()
-    @Post()
-    async crearReservaAdmin(@Body() dto: CrearReservaAdminDto): Promise<{ id: number }> {
-        return await this.reservasService.crearReservaAdmin(dto);
+    @Post('admin')
+    async crearReservaAdmin(@Body() datos: CreateReservaDto): Promise<{ id: number }> {
+        return await this.reservasService.crearReservaAdmin(datos);
     }
 
     //endpoint admin obtener reserva
+    @UseGuards(AuthGuard, RolesGuard)
     @Roles(RolesUsuarioEnum.ADMINISTRADOR)
-    @UseGuards(AuthGuard)
     @ApiBearerAuth()
     @Get()
     async obtenerTodasLasReservas(@Query() filtros: FiltrarReservasDto): Promise<ListReservaDto[]> {
@@ -79,6 +79,8 @@ import { RolesUsuarioEnum } from "../common/enums/roles.enum.js";
 
 
     //endpoit admin cancelar reserva
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(RolesUsuarioEnum.ADMINISTRADOR)
     @ApiBearerAuth()
     @Put(":id")
     async cancelarReservaAdmin(@Param("id", ParseIntPipe) id: number): Promise<void> {

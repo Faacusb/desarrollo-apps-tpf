@@ -1,0 +1,62 @@
+<main class="contenedor">
+  <h2>Lista de médicos</h2>
+
+  <p-table [value]="medicos">
+    <ng-template #header>
+      <tr>
+        <th>Médico</th>
+        <th>Matricula</th>
+        <th>Tarifa actual</th>
+        <th>Editar tarifa</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-turno>
+      <tr>
+        <td>{{ medico.id }}</td>
+
+        <td>
+          {{ medico.matricula }}
+        </td>
+
+        <td>
+          {{ medico.valorConsulta }}
+        </td>
+
+        <td>
+          @if (editarTarifa(valor)) {
+            <p-button
+              label="Cancelar"
+              severity="danger"
+              (onClick)="abrirConfirmacion(turno)" />
+          }
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  @if (turnos.length === 0) {
+    <p class="vacio">No tenés turnos reservados.</p>
+  }
+
+  <p-dialog
+    header="Tarifa actual: "
+    [modal]="true"
+    [visible]="visible()"
+    (onHide)="cerrarDialog()">
+
+    @if (editarTarifa) {
+      <p>¿Querés actualizar la tarifa de este medico?</p>
+
+      <p-button
+        label="Volver"
+        severity="secondary"
+        (onClick)="cerrarDialog()" />
+
+      <p-button
+        label="Confirmar cancelación"
+        severity="danger"
+        (onClick)="confirmarCancelacion()" />
+    }
+  </p-dialog>
+</main>

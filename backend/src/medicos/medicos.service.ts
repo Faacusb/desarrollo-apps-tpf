@@ -9,6 +9,7 @@ import { Medico } from "./entities/medico.entity.js";
 import { Reserva } from "../reservas/entities/reserva.entity.js";
 import { Repository } from "typeorm";
 import { ActulizarValorConsultaDto } from "./dto/actualizar-valor-consulta.dto.js";
+import { MedicoAdminDto } from "./dto/medico-admin.dto.js";
 
 @Injectable()
 export class MedicosService {
@@ -148,6 +149,24 @@ export class MedicosService {
         reserva.estado = estado;
         await this.reservasRepository.save(reserva);
     }
+
+    // Obtener todos los medicos para el admin
+    async obtenerMedicosAdmin(): Promise<MedicoAdminDto[]> {
+
+        const medicos = await this.repository.find({ order: { id: 'ASC' } })
+        
+        const dtoList: MedicoAdminDto[] = [];
+        for (const m of medicos) {
+            const dto = new MedicoAdminDto();
+            dto.id = m.id;
+            dto.idUsuario = m.idUsuario;
+            dto.matricula = m.matricula;
+            dto.valorConsulta = m.valorConsulta;
+            dtoList.push(dto);
+        }
+
+        return dtoList;
+    } 
 }
 
 
