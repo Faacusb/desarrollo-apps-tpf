@@ -7,7 +7,7 @@ import {
     Put,
     Query,
     Req,
-    UseGuards
+    UseGuards    
 } from "@nestjs/common";
 
 import {
@@ -20,12 +20,14 @@ import {
     ApiBadRequestResponse,
     ApiUnauthorizedResponse,
     ApiForbiddenResponse,
-    ApiNotFoundResponse
+    ApiNotFoundResponse,
+    ApiTags
 } from "@nestjs/swagger";
 
 import { MedicosService } from "./medicos.service.js";
 import { ActulizarValorConsultaDto } from "./dto/actualizar-valor-consulta.dto.js";
 import { RegistrarAsistenciaDto } from "./dto/registrar-asistencia.dto.js";
+import { MedicoAdminDto } from "./dto/medico-admin.dto.js";
 
 import { AuthGuard } from "../auth/guards/auth.guard.js";
 import { RolesGuard } from "../auth/guards/roles.guard.js";
@@ -41,7 +43,7 @@ type RequestAutenticada = Request & {
         rol: RolesUsuarioEnum;
     };
 };
-
+@ApiTags("Médicos")
 @Controller("medicos")
 export class MedicosController {
 
@@ -49,12 +51,56 @@ export class MedicosController {
         private readonly service: MedicosService
     ) {}
 
-    // Endpoint modificar tarifa ADMIN
     
+    // Endpoint modificar tarifa ADMIN
+
+    @Put(":id")
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(RolesUsuarioEnum.ADMINISTRADOR)
     @ApiBearerAuth()
-    @Put(":id")
+
+    @ApiOperation({
+        summary: "Actualizar el valor de consulta de un médico",
+        description:
+            "Permite a un usuario con rol ADMINISTRADOR " +
+            "modificar el valor de consulta de un médico existente."
+    })
+
+    @ApiParam({
+        name: "id",
+        type: Number,
+        required: true,
+        example: 1,
+        description: "Identificador del médico que se desea modificar"
+    })
+
+    @ApiBody({
+        type: ActulizarValorConsultaDto,
+        description: "Nuevo valor de consulta del médico"
+    })
+
+    @ApiOkResponse({
+        description: "Valor de consulta actualizado correctamente."
+    })
+
+    @ApiBadRequestResponse({
+        description:
+            "El ID del médico o los datos enviados no son válidos."
+    })
+
+    @ApiUnauthorizedResponse({
+        description: "Token JWT ausente, inválido o expirado."
+    })
+
+    @ApiForbiddenResponse({
+        description:
+            "El usuario autenticado no tiene el rol ADMINISTRADOR."
+    })
+
+    @ApiNotFoundResponse({
+        description: "No existe un médico con el ID indicado."
+    })
+
     async actualizarValorConsulta(
         @Param("id", ParseIntPipe) id: number,
         @Body() dto: ActulizarValorConsultaDto
@@ -62,7 +108,6 @@ export class MedicosController {
 
         await this.service.actualizarValorConsulta(id, dto);
     }
-
 
     // Endpoint consultar agenda MEDICO 
     @Get("mi-agenda")
@@ -93,8 +138,61 @@ export class MedicosController {
             "Agenda del médico obtenida correctamente. " +
             "Devuelve las reservas de la fecha seleccionada, " +
             "ordenadas por horario, junto con los datos " +
-            "básicos de cada paciente."
+            "básicos de cada paciente.",
+        schema: {
+            type: "array",
+            items: {
+                type: "object",
+                properties: {
+                    id: {
+                        type: "integer",
+                        example: 1
+                    },
+                    fechaHora: {
+                        type: "string",
+                        format: "date-time",
+                        example: "2026-11-13T14:00:00.000Z"
+                    },
+                    estado: {
+                        type: "string",
+                        enum: [
+                            "ACTIVO",
+                            "ATENDIDO",
+                            "AUSENTE",
+                            "CANCELADO"
+                        ],
+                        example: "ACTIVO"
+                    },
+                    valorConsulta: {
+                        type: "number",
+                        example: 40000
+                    },
+                    paciente: {
+                        type: "object",
+                        properties: {
+                            id: {
+                                type: "integer",
+                                example: 2
+                            },
+                            documento: {
+                                type: "string",
+                                example: "12345678"
+                            },
+                            apellidos: {
+                                type: "string",
+                                example: "Gómez"
+                            },
+                            nombres: {
+                                type: "string",
+                                example: "Lucía"
+                            }
+                        }
+                    }
+                }
+            }
+        }
     })
+
 
     // Fecha incorrecta
     @ApiBadRequestResponse({
@@ -206,12 +304,36 @@ export class MedicosController {
         );
     }
 
+    
     @Get("admin")
     @UseGuards(AuthGuard, RolesGuard)
     @Roles(RolesUsuarioEnum.ADMINISTRADOR)
     @ApiBearerAuth()
-    async obtenerMedicosAdmin() {
-        // Obtener todos los medicos para el admin
+
+    @ApiOperation({
+        summary: "Listar médicos para administración",
+        description:
+            "Obtiene el listado de médicos registrados en el sistema, " +
+            "ordenados por ID. Disponible únicamente para usuarios " +
+            "con rol ADMINISTRADOR."
+    })
+
+    @ApiOkResponse({
+        description: "Listado de médicos obtenido correctamente.",
+        type: MedicoAdminDto,
+        isArray: true
+    })
+
+    @ApiUnauthorizedResponse({
+        description: "Token JWT ausente, inválido o expirado."
+    })
+
+    @ApiForbiddenResponse({
+        description:
+            "El usuario autenticado no tiene el rol ADMINISTRADOR."
+    })
+
+    async obtenerMedicosAdmin(): Promise<MedicoAdminDto[]> {
         return await this.service.obtenerMedicosAdmin();
     }
 }
