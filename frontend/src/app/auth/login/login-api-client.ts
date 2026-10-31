@@ -5,14 +5,18 @@ import { Observable } from "rxjs";
 @Injectable({
     providedIn: "root"
 })
-export class LoginApiClient{
+export class LoginApiClient {
 
-    private readonly httpClient: HttpClient = inject(HttpClient)
+    private readonly httpClient: HttpClient = inject(HttpClient);
 
-    iniciarSesion(nombre: string, clave: string): Observable<{accessToken: string}>{
+    iniciarSesion(
+        email: string,
+        clave: string
+    ): Observable<{ accessToken: string }> {
 
-        return this.httpClient.post<{accessToken:string}>("/api/v1/auth", {nombre, clave});
-
+        return this.httpClient.post<{ accessToken: string }>(
+            "/api/v1/auth/login",
+            { email, clave }
+        );
     }
-
 }

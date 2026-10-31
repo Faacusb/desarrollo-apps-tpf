@@ -7,11 +7,28 @@ import { MonitorReservas } from './admin/reservas-monitor/reservas-monitor';
 import { MedicosLista } from './admin/medicos-lista/medicos-lista';
 import { ReservaForm } from './admin/reservas-form/reservas-form';
 import { Login } from './auth/login/login';
+import {authGuard,roleGuard} from './auth/guards/auth.guards';
 
 export const routes: Routes = [
     { path: "login", component: Login },
-    { path: 'reservas', component: MisTurnosComponent },
-    { path: 'agenda-medica', component: AgendaMedica },
+    { 
+        path: 'reservas', 
+        component: MisTurnosComponent,
+        canActivate: [
+            authGuard, 
+            roleGuard(['PACIENTE'])
+        ]
+    },
+
+    { 
+        path: 'agenda-medica', 
+        component: AgendaMedica,
+        canActivate: [
+            authGuard,
+            roleGuard(['MEDICO'])
+        ]
+    },
+
     { 
         path: 'admin',
         component: AdminLayout,

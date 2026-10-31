@@ -1,0 +1,30 @@
+.barra-superior {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 25px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.texto-sesion {
+    color: #475569;
+    font-size: 14px;
+}
+
+.boton-cerrar-sesion {
+    padding: 9px 16px;
+    border: none;
+    border-radius: 7px;
+    background-color: #dc3545;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.boton-cerrar-sesion:hover {
+    background-color: #b02a37;
+}

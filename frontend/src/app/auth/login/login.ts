@@ -1,5 +1,5 @@
 import { Component, inject } from "@angular/core";
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import {FormControl,FormGroup,ReactiveFormsModule,Validators} from "@angular/forms";
 import { MessageService } from "primeng/api";
 import { LoginApiClient } from "./login-api-client";
 import { AuthStore } from "../auth-store";
@@ -10,46 +10,94 @@ import { InputText } from "primeng/inputtext";
 
 @Component({
     selector: "app-login",
+    standalone: true,
     templateUrl: "./login.html",
     styleUrl: "./login.css",
-    imports: [ReactiveFormsModule, InputText, Password, Button]
+    imports: [
+        ReactiveFormsModule,
+        InputText,
+        Password,
+        Button
+    ]
 })
 export class Login {
 
-    private readonly messageService: MessageService = inject(MessageService)
+    private readonly messageService = inject(MessageService);
 
-    private readonly loginApiClient: LoginApiClient = inject(LoginApiClient);
+    private readonly loginApiClient = inject(LoginApiClient);
 
-    private readonly authStore: AuthStore = inject(AuthStore);
+    private readonly authStore = inject(AuthStore);
 
-    private readonly router: Router = inject(Router)
+    private readonly router = inject(Router);
 
-    form: FormGroup = new FormGroup({
-        nombre: new FormControl(null, Validators.required),
-        clave: new FormControl(null, Validators.required)
+    form = new FormGroup({
+        email: new FormControl('', [
+            Validators.required,
+            Validators.email
+        ]),
+        clave: new FormControl('', [
+            Validators.required
+        ])
     });
 
-    iniciarSesion() {
+    iniciarSesion(): void {
 
-        if (!this.form.valid) {
-            this.messageService.add({ severity: "error", summary: "Es necesario completar todos los campos del formulario para avanzar" })
-            return
+        if (this.form.invalid) {
+
+            this.form.markAllAsTouched();
+
+            this.messageService.add({
+                severity: "error",
+                summary: "Completá correctamente el correo electrónico y la contraseña."
+            });
+
+            return;
         }
 
-        const nombre: string = this.form.value.nombre;
+        const email = this.form.value.email!;
+        const clave = this.form.value.clave!;
 
-        const clave: string = this.form.value.clave;
+        this.loginApiClient.iniciarSesion(email, clave).subscribe({
 
-        this.loginApiClient.iniciarSesion(nombre, clave).subscribe({
-            next: (res)=>{
+            next: (res) => {
+
                 this.authStore.guardarToken(res.accessToken);
-                this.router.navigateByUrl("/proyectos");
+
+                const rol = this.authStore.obtenerRol();
+
+                const rutas: Record<string, string> = {
+                    ADMINISTRADOR: '/admin',
+                    MEDICO: '/agenda-medica',
+                    PACIENTE: '/reservas'
+                };
+
+                const destino = rol ? rutas[rol] : null;
+
+                if (!destino) {
+
+                    this.authStore.cerrarSesion();
+
+                    this.messageService.add({
+                        severity: "error",
+                        summary: "No se pudo identificar el rol del usuario."
+                    });
+
+                    return;
+                }
+
+                void this.router.navigateByUrl(destino);
             },
-            error: (err)=>{
-                this.messageService.add({severity: "error", summary: "Ha ocurrido un error al iniciar sesión. Verifique las credenciales ingresadas"})
+
+            error: (err) => {
+
+                console.error("Error al iniciar sesión:", err);
+
+                this.messageService.add({
+                    severity: "error",
+                    summary: "No se pudo iniciar sesión.",
+                    detail: "Verificá tu correo electrónico y contraseña."
+                });
             }
         });
-
     }
-
 }

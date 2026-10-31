@@ -1,6 +1,6 @@
 import { HttpEvent, HttpHandlerFn, HttpRequest } from "@angular/common/http";
 import { inject } from "@angular/core";
-import { Observable } from "rxjs/internal/Observable";
+import { Observable } from "rxjs";
 import { AuthStore } from "./auth-store";
 
 export function authInterceptor(

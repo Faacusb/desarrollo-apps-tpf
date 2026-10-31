@@ -1,2 +1,19 @@
+@if (authStore.obtenerToken()) {
+    <header class="barra-superior">
+        <span class="texto-sesion">
+            Sesión iniciada
+        </span>
+
+        <button
+            type="button"
+            class="boton-cerrar-sesion"
+            (click)="cerrarSesion()">
+
+            Cerrar sesión
+        </button>
+    </header>
+}
+
 <router-outlet />
+
 <p-toast />

@@ -1,8 +1,44 @@
-<form [formGroup]="form">
+<form [formGroup]="form" (ngSubmit)="iniciarSesion()">
+
     <div id="main">
-        <h2 id="header">Sistema de gestión de proyectos</h2>
-        <input pInputText id="nombre" type="text" placeholder="Nombre de usuario" formControlName="nombre" />
-        <p-password id="clave" formControlName="clave" [feedback]="false" autocomplete="off" placeholder="Clave de acceso"/>
-        <p-button label="Iniciar sesión" (click)="iniciarSesion()"/>
+
+        <h2 id="header">
+            Sistema de gestión de turnos - Clínica Médica
+        </h2>
+
+        <label for="email">Correo electrónico</label>
+
+        <input
+            pInputText
+            id="email"
+            type="email"
+            placeholder="Ingresá tu correo electrónico"
+            formControlName="email"
+        />
+
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+            <small class="mensaje-error">
+                Ingresá un correo electrónico válido.
+            </small>
+        }
+
+        <label for="clave">Contraseña</label>
+
+        <p-password
+            inputId="clave"
+            formControlName="clave"
+            [feedback]="false"
+            [toggleMask]="true"
+            autocomplete="current-password"
+            placeholder="Ingresá tu contraseña"
+        />
+
+        <p-button
+            type="submit"
+            label="Iniciar sesión"
+            [disabled]="form.invalid"
+        />
+
     </div>
+
 </form>
