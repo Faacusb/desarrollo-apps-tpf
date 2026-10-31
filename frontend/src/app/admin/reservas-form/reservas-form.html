@@ -1,0 +1,167 @@
+<main class="contenedor">
+
+    <h2>Crear reserva</h2>
+
+    <button
+        type="button"
+        (click)="irAlMonitor()">
+        Ver reservas
+    </button>
+
+    @if (mensajeExito) {
+        <p class="mensaje-exito" role="status">
+            {{ mensajeExito }}
+        </p>
+    }
+
+    @if (mensajeError) {
+        <p class="mensaje-error" role="alert">
+            {{ mensajeError }}
+        </p>
+    }
+
+    <form (ngSubmit)="guardar()">
+
+        <!-- Selección del médico -->
+        <div class="campo">
+
+            <label for="medico">Médico</label>
+
+            <select
+                id="medico"
+                name="idMedico"
+                [(ngModel)]="idMedico"
+                (ngModelChange)="onMedicoChange()"
+                [disabled]="cargandoMedicos || guardando">
+
+                <option [ngValue]="null">
+                    Seleccioná un médico
+                </option>
+
+                @for (medico of medicos; track medico.id) {
+                    <option [ngValue]="medico.id">
+                        Matrícula {{ medico.matricula }}
+                        - Tarifa: {{ medico.valorConsulta | currency:'ARS':'$':'1.0-0' }}
+                    </option>
+                }
+
+            </select>
+
+            @if (cargandoMedicos) {
+                <small>Cargando médicos...</small>
+            }
+
+        </div>
+
+
+        <!-- Selección del paciente -->
+        <div class="campo">
+
+            <label for="paciente">Paciente</label>
+
+            <select
+                id="paciente"
+                name="idPaciente"
+                [(ngModel)]="idPaciente"
+                [disabled]="cargandoPacientes || guardando">
+
+                <option [ngValue]="null">
+                    Seleccioná un paciente
+                </option>
+
+                @for (paciente of pacientes; track paciente.id) {
+                    <option [ngValue]="paciente.id">
+                        {{ paciente.apellidos }}, {{ paciente.nombres }}
+                        - {{ paciente.email }}
+                    </option>
+                }
+
+            </select>
+
+            @if (cargandoPacientes) {
+                <small>Cargando pacientes...</small>
+            }
+
+        </div>
+
+
+        <!-- Selección de fecha -->
+        <div class="campo">
+
+            <label for="fecha">Fecha de la reserva</label>
+
+            <input
+                id="fecha"
+                type="date"
+                name="fecha"
+                [(ngModel)]="fecha"
+                [min]="fechaMinima"
+                [max]="fechaMaxima"
+                (ngModelChange)="onFechaChange()"
+                [disabled]="guardando"
+            />
+
+        </div>
+
+
+        <!-- Horarios disponibles -->
+        <div class="campo">
+
+            <label for="hora">Horario disponible</label>
+
+            <select
+                id="hora"
+                name="hora"
+                [(ngModel)]="hora"
+                [disabled]="!horariosConsultados || cargandoHorarios || guardando">
+
+                <option value="">
+                    Seleccioná un horario
+                </option>
+
+                @for (horario of horarios; track horario) {
+                    <option [value]="horario">
+                        {{ horario }}
+                    </option>
+                }
+
+            </select>
+
+            @if (cargandoHorarios) {
+                <small>Consultando horarios disponibles...</small>
+            }
+
+            @if (horariosConsultados && horarios.length === 0) {
+                <small>
+                    No hay horarios disponibles para esa fecha.
+                </small>
+            }
+
+        </div>
+
+
+        <!-- Acciones -->
+        <div class="acciones">
+
+            <button
+                type="button"
+                (click)="limpiar()"
+                [disabled]="guardando">
+
+                Limpiar
+
+            </button>
+
+            <button
+                type="submit"
+                [disabled]="guardando || cargandoMedicos || cargandoPacientes">
+
+                {{ guardando ? 'Guardando...' : 'Crear reserva' }}
+
+            </button>
+
+        </div>
+
+    </form>
+
+</main>

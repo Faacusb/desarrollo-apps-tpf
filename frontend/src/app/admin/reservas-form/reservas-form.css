@@ -1,0 +1,160 @@
+/* Contenedor principal */
+.contenedor {
+    width: 100%;
+    max-width: 850px;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+}
+
+/* Título */
+.contenedor h2 {
+    margin: 0 0 28px;
+    color: #263445;
+    font-size: 25px;
+    font-weight: 600;
+    border-bottom: 2px solid #e8edf2;
+    padding-bottom: 15px;
+}
+
+/* Formulario */
+.contenedor form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+/* Campos */
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.campo label {
+    color: #344256;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Select e inputs */
+.campo select,
+.campo input {
+    width: 100%;
+    min-height: 43px;
+    padding: 10px 12px;
+    border: 1px solid #cbd5df;
+    border-radius: 7px;
+    background-color: #ffffff;
+    color: #263445;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.campo select:focus,
+.campo input:focus {
+    outline: none;
+    border-color: #3678c9;
+    box-shadow: 0 0 0 3px rgba(54, 120, 201, 0.13);
+}
+
+.campo select:disabled,
+.campo input:disabled {
+    background-color: #f1f3f5;
+    color: #8a949f;
+    cursor: not-allowed;
+}
+
+/* Textos de ayuda */
+.campo small {
+    color: #687789;
+    font-size: 12px;
+}
+
+/* Botones */
+.acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+    padding-top: 20px;
+    border-top: 1px solid #e8edf2;
+}
+
+.acciones button {
+    min-width: 135px;
+    padding: 11px 18px;
+    border: none;
+    border-radius: 7px;
+    background-color: #286bb5;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.acciones button:hover:not(:disabled) {
+    background-color: #1e548f;
+    transform: translateY(-1px);
+}
+
+.acciones button:first-child {
+    background-color: #e8edf2;
+    color: #344256;
+}
+
+.acciones button:first-child:hover:not(:disabled) {
+    background-color: #d7dfe8;
+}
+
+.acciones button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Mensajes */
+.mensaje-exito,
+.mensaje-error {
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border-radius: 7px;
+    font-size: 14px;
+}
+
+.mensaje-exito {
+    color: #176b3a;
+    background-color: #e8f5ec;
+    border: 1px solid #b9dfc5;
+}
+
+.mensaje-error {
+    color: #a52a2a;
+    background-color: #fcecec;
+    border: 1px solid #edc1c1;
+}
+
+/* Adaptación a celulares */
+@media (max-width: 600px) {
+    .contenedor {
+        margin: 15px auto;
+        padding: 20px;
+    }
+
+    .contenedor h2 {
+        font-size: 21px;
+    }
+
+    .acciones {
+        flex-direction: column-reverse;
+    }
+
+    .acciones button {
+        width: 100%;
+    }
+}
