@@ -19,6 +19,7 @@ export class MedicosLista implements OnInit {
     // Inyectar servicios
     constructor(
         private readonly apiService: AdminApiService,
+        private readonly cdr: ChangeDetectorRef
     ) {}
     
     medicos: MedicoAdmin[] = [];
@@ -47,6 +48,8 @@ export class MedicosLista implements OnInit {
                 this.medicos = medicos;
                 this.cargando = false;
                 this.consultaRealizada = true;
+
+                this.cdr.detectChanges();
             },
             error: (error) => {
                 console.error('Error al obtener los médicos:', error);
@@ -54,6 +57,8 @@ export class MedicosLista implements OnInit {
                 this.mensajeError = error.error?.message || 'No se pudo obtener la lista de médicos.';
                 this.cargando = false;
                 this.consultaRealizada = true;
+
+                this.cdr.detectChanges();
             },
         });        
     }

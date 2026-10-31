@@ -52,13 +52,13 @@ export class AdminApiService {
             { headers: this.construirHeaders(), params },
         );
     }
-    crearReserva(datos: CrearReservaAdmin): Observable<RespuestaId> {
-        return this.http.post<RespuestaId>(
-            `${this.baseUrl}/reservas/admin`,
-            datos,
-            { headers: this.construirHeaders() },
-        );
-    }
+    crearReserva(datos: CrearReservaAdmin): Observable<unknown> {
+    return this.http.post<unknown>(
+        `${this.baseUrl}/reservas/admin`,
+        datos,
+        { headers: this.construirHeaders() }
+    );
+}
 
     //metodos privados
     private construirHeaders(): HttpHeaders {

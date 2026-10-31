@@ -7,6 +7,7 @@ import { ButtonModule } from "primeng/button";
 import { DialogModule } from "primeng/dialog";
 import { AdminApiService } from "../admin-api.services";
 import { Router } from '@angular/router';
+import { finalize } from 'rxjs';
 
 
 @Component({
@@ -202,61 +203,77 @@ export class ReservaForm implements OnInit {
     }
 
     //crear la reserva
-    guardar(): void{
+    guardar(): void {
 
-        if (!this.validarFormulario()) {
-            return;
-        }
-
-        const idMedico = this.idMedico;
-        const idPaciente = this.idPaciente;
-        const fecha = this.fecha;
-        const hora = this.hora;
-
-        if (idMedico === null || idPaciente === null) {
-            return;
-        }
-
-        const datos: CrearReservaAdmin = {
-            fecha,
-            hora,
-            idMedico,
-            idPaciente
-        };
-
-        this.guardando = true;
-        this.mensajeError = '';
-        this.mensajeExito = '';
-        this.reservaCreadaId = null;
-
-        this.apiService.crearReserva(datos).subscribe({
-
-            next: (respuesta) => {
-
-                this.reservaCreadaId = respuesta.id;
-
-                this.mensajeExito =
-                    `Reserva creada correctamente. Número: ${respuesta.id}.`;
-
-                this.hora = '';
-                this.guardando = false;
-
-                // Actualizar los horarios disponibles
-                this.cargarHorarios();
-            },
-
-            error: (error) => {
-
-                console.error('Error al crear reserva:', error);
-
-                this.mensajeError =
-                    error.error?.message ||
-                    'No se pudo crear la reserva.';
-
-                this.guardando = false;
-            }
-        });
+    if (!this.validarFormulario()) {
+        return;
     }
+
+    const idMedico = this.idMedico;
+    const idPaciente = this.idPaciente;
+
+    if (idMedico === null || idPaciente === null) {
+        return;
+    }
+
+    const datos: CrearReservaAdmin = {
+        fecha: this.fecha,
+        hora: this.hora,
+        idMedico,
+        idPaciente
+    };
+
+    console.log('Datos enviados para crear reserva:', datos);
+
+    this.guardando = true;
+    this.mensajeError = '';
+    this.mensajeExito = '';
+    this.reservaCreadaId = null;
+
+    this.apiService.crearReserva(datos).pipe(
+
+        finalize(() => {
+            this.guardando = false;
+        })
+
+    ).subscribe({
+
+        next: (respuesta) => {
+
+            console.log('Respuesta del backend:', respuesta);
+
+            // Comprobar si el backend devolvió un ID
+            const id = (
+                typeof respuesta === 'object' &&
+                respuesta !== null &&
+                'id' in respuesta &&
+                typeof respuesta.id === 'number'
+            ) ? respuesta.id : null;
+
+            this.reservaCreadaId = id;
+
+            this.mensajeExito = id !== null
+                ? `Reserva creada correctamente. Número: ${id}.`
+                : 'Reserva creada correctamente.';
+
+            this.hora = '';
+
+            // Actualizar los horarios disponibles
+            this.cargarHorarios();
+        },
+
+        error: (error) => {
+
+            console.error('Error al crear reserva:', error);
+            console.error('Estado HTTP:', error.status);
+            console.error('Respuesta:', error.error);
+
+            this.mensajeError =
+                error.error?.message ||
+                'No se pudo crear la reserva.';
+        }
+    });
+}
 
     //limpiar el formulario
     limpiar(): void {
