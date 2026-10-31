@@ -2,11 +2,23 @@
     <div class="contenedor">
         <h2>PANEL DE ADMINISTRACION</h2>
         <ul class="nav lista">
-            <li class="nav-item"><a class="nav-link" routerLink="admin/reservas" routerLinkActive="active">Monitor Reservas</a></li>
-            <li class="nav-item"><a class="nav-link" routerLink="admin/medicos" routerLinkActive="active">Lista de Medicos</a></li>
-            <li class="nav-item"><a class="nav-link" routerLink="admin/reserva/nueva" routerLinkActive="active">Crear Reserva</a></li>
+            @for (item of menu; track item.ruta) {
+                <li class="nav-item">
+                    <a class="nav-link" [routerLink]="item.ruta" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                        {{ item.label }}
+                    </a>
+                </li>
+            } 
         </ul>
 
+        <button
+            type="button"
+            class="btn-cerrar-sesion"
+            (click)="cerrarSesion()"    
+        >
+            Cerrar sesión
+        </button>
     </div>
 </nav>
+
 <router-outlet></router-outlet>
