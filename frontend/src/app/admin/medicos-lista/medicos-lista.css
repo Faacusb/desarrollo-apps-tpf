@@ -1,0 +1,44 @@
+.contenedor {
+  padding: 24px;
+}
+
+.contenedor h2 {
+  margin-bottom: 24px;
+}
+
+.mensaje-exito {
+  color: #15803d;
+  margin-bottom: 16px;
+}
+
+.mensaje-error {
+  color: #dc2626;
+  margin-bottom: 16px;
+}
+
+.vacio {
+  padding: 20px;
+  text-align: center;
+  color: #777;
+}
+
+.formulario-tarifa {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 300px;
+}
+
+.formulario-tarifa input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.acciones-dialogo {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}

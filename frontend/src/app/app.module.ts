@@ -7,7 +7,7 @@ import { AppComponent } from './app.component';
 import { ReservaTurnosComponent } from './features/reserva-turnos/reserva-turnos.component';
 
 @NgModule({
-  declarations: [
+  declarations:[
     AppComponent,
     ReservaTurnosComponent
   ],
@@ -18,4 +18,4 @@ import { ReservaTurnosComponent } from './features/reserva-turnos/reserva-turnos
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }.
+export class AppModule { }

@@ -1,62 +1,141 @@
 <main class="contenedor">
+
   <h2>Lista de médicos</h2>
 
-  <p-table [value]="medicos">
+  @if (mensajeExito) {
+    <p class="mensaje-exito" role="status">
+      {{ mensajeExito }}
+    </p>
+  }
+
+  @if (mensajeError) {
+    <p class="mensaje-error" role="alert">
+      {{ mensajeError }}
+    </p>
+  }
+
+  <p-table
+    [value]="medicos"
+    [loading]="cargando"
+  >
+
     <ng-template #header>
       <tr>
-        <th>Médico</th>
+        <th>ID Médico</th>
+        <th>ID Usuario</th>
         <th>Matricula</th>
         <th>Tarifa actual</th>
-        <th>Editar tarifa</th>
+        <th>Acciones</th>
       </tr>
     </ng-template>
 
-    <ng-template #body let-turno>
+    <ng-template #body let-medico>
       <tr>
-        <td>{{ medico.id }}</td>
+        <td>
+          {{ medico.id }}
+        </td>
+
+        <td>
+          {{ medico.idUsuario }}
+        </td>
 
         <td>
           {{ medico.matricula }}
         </td>
 
         <td>
-          {{ medico.valorConsulta }}
+          {{ medico.valorConsulta  | currency:'ARS':'$':'1.0-0' }}
         </td>
 
         <td>
-          @if (editarTarifa(valor)) {
-            <p-button
-              label="Cancelar"
-              severity="danger"
-              (onClick)="abrirConfirmacion(turno)" />
-          }
+          <p-button
+            label="Modificar tarifa"
+            icon="pi pi-pencil"
+            (onClick)="abrirEdicion(medico)" 
+          />
         </td>
       </tr>
     </ng-template>
+
   </p-table>
 
-  @if (turnos.length === 0) {
-    <p class="vacio">No tenés turnos reservados.</p>
+  @if (!cargando && consultaRealizada && medicos.length === 0) {
+    <p class="vacio">
+      No hay médicos registrados.
+    </p>
   }
 
+  <!-- Ventana de modificación de tarifa -->
+
   <p-dialog
-    header="Tarifa actual: "
+    header="Modificar tarifa"
     [modal]="true"
     [visible]="visible()"
-    (onHide)="cerrarDialog()">
+    [closable]="!guardando"
+    [closeOnEscape]="!guardando"
+    (onHide)="cerrarEdicion()">
 
-    @if (editarTarifa) {
-      <p>¿Querés actualizar la tarifa de este medico?</p>
+    @if (medicoSeleccionado) {
+      <div class ="formulario-tarifa">
+        <p>
+          Médico: <strong> {{ medicoSeleccionado.id }} </strong>
+        </p>
 
-      <p-button
-        label="Volver"
-        severity="secondary"
-        (onClick)="cerrarDialog()" />
+        <p>
+          Matricula: <strong> {{ medicoSeleccionado.matricula }} </strong>
+        </p>
 
-      <p-button
-        label="Confirmar cancelación"
-        severity="danger"
-        (onClick)="confirmarCancelacion()" />
+        <p>
+          Tarifa actual: 
+          <strong> 
+            {{ medicoSeleccionado.valorConsulta | currency:'ARS':'$':'1.0-0' }} 
+          </strong>
+        </p>
+
+        <label for="nuevaTarifa">
+          Nueva tarifa:
+        </label>
+
+        <input
+          id="nuevaTarifa"
+          type="number"
+          name="nuevaTarifa"
+          [(ngModel)]="nuevaTarifa"
+          min="1"
+          step="1"
+          placeholder="Ingresá la nueva tarifa"
+          [disabled]="guardando"
+          (ngModelChange)="errorTarifa = ''"
+        />
+
+        @if (errorTarifa) {
+          <p class="mensaje-error">
+            {{ errorTarifa }}
+          </p>
+        }
+
+        <div class="acciones-dialogo">
+
+          <p-button
+            label="Cancelar"
+            severity="secondary"
+            [disabled]="guardando"
+            (onClick)="cerrarEdicion()"
+          />
+
+          <p-button
+            label="Guardar tarifa"
+            icon="pi pi-check"
+            [loading]="guardando"
+            [disabled]="guardando"
+            (onClick)="guardarTarifa()"
+          />
+
+        </div>
+
+      </div>
     }
+
   </p-dialog>
+
 </main>
