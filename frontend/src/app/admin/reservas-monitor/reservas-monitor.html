@@ -1,80 +1,94 @@
 <main class="contenedor">
   <h2>Monitor de Reservas</h2>
 
-  <!-- Filtro por Medico -->
-    <div class="filtro-medico">
-
-        <label for="medico">Seleccionar Medico:</label>
-
-        <input
-            type="number"
-            id="medico"
-            name="medico"
-            [(ngModel)]="Medico"
-        />
-
-        <p-button
-            label="Consultar medicos"
-            (onClick)="consultarAgenda()"
-            [disabled]="!medico || cargando"
-            [loading]="cargando"
-        />
-
-    </div>
-  <!-- Filtro por fecha -->
-    <div class="filtro-fecha">
-
-        <label for="fecha">Seleccionar fecha:</label>
-
-        <input
-            type="date"
-            id="fecha"
-            name="fecha"
-            [(ngModel)]="fechaSeleccionada"
-        />
-
-        <p-button
-            label="Consultar por fecha"
-            (onClick)="consultarAgenda()"
-            [disabled]="!fechaSeleccionada || cargando"
-            [loading]="cargando"
-        />
-
+  <!-- Seccion Filtros -->
+  <section class="filtros">
+    <div class="campo">
+        <label for="estado">Estado</label>
+        <select id="estado" [(ngModel)]="filtros.estado">
+            @for (opcion of estados; track opcion.value) {
+                <option [ngValue]="opcion.value">
+                    {{ opcion.label }}
+                </option>
+            }
+        </select>
     </div>
 
-    <!-- Indicador de carga -->
+    <div class="campo">
+        <label for="medico">Medico</label>
+        <select id="medico" [(ngModel)]="filtros.idMedico" [disabled]="cargandoMedicos">
+            <option [ngValue]="null">Todos</option>
+            @for (medico of medicos; track medico.id) {
+                <option [ngValue]="medico.id">
+                    Matrícula {{ medico.matricula }}
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="campo">
+        <label for="desde">Desde</label>
+        <input id="desde" type="date" [(ngModel)]="filtros.desde" />
+    </div>
+    <div class="campo">
+        <label for="hasta">Hasta</label>
+        <input id="hasta" type="date" [(ngModel)]="filtros.hasta" />
+    </div>
+
+    <div class="acciones-filtros">
+        <p-button 
+            label="Aplicar Filtros"
+            (onClick)="aplicarFiltros()"
+            [disabled]="cargando"
+            [loading]="cargando"
+        />
+        <p-button 
+            label="Limpiar"
+            severity="secondary"
+            (onClick)="limpiarFiltros()"
+            [disabled]="cargando"
+        />
+    </div>
+  </section>
+  
+  <!-- Carga de médicos -->
+   @if (cargandoMedicos) {
+    <p class="mensaje" role="status">Cargando médicos...</p>
+   }
+
+   @if (mensajeErrorMedicos && !mensajeError) {
+    <p class="mensaje-error" role="alert">
+        {{ mensajeErrorMedicos }}
+    </p>
+   }
+    
+    <!-- Carga de reservas -->
     @if (cargando) {
-        <p class="mensaje" role="status">
-            Cargando reservas...
-        </p>
+        <p class="mensaje" role="status">Cargando reservas...</p>
     }
 
-    <!-- Mensaje de error -->
     @if (mensajeError) {
         <p class="mensaje-error" role="alert">
             {{ mensajeError }}
         </p>
     }
 
-    <!-- Mensaje de operación exitosa -->
     @if (mensajeExito) {
         <p class="mensaje-exito" role="status">
             {{ mensajeExito }}
         </p>
     }
-
-    <!-- Mensaje cuando no hay reservas -->
+    
+    <!-- Sin resultados -->
     @if (consultaRealizada && !cargando && reservas.length === 0 && !mensajeError) {
         <p class="vacio">
-            No hay reservas registradas para la fecha seleccionada.
+            No hay reservas que coincidan con los filtros elegidos.
         </p>
     }
 
-    <!-- Tabla de reservas -->
+    <!-- Tabla -->
     @if (reservas.length > 0) {
-
         <p-table [value]="reservas">
-
             <ng-template #header>
                 <tr>
                     <th>Fecha y hora</th>
@@ -85,105 +99,76 @@
                 </tr>
             </ng-template>
 
-            <ng-template #body let-turno>
+            <ng-template #body let-reserva>
                 <tr>
                     <td>
                         {{ reserva.fechaHora | date:'dd/MM/yyyy HH:mm' }}
                     </td>
-
                     <td>
                         {{ reserva.paciente?.apellidos }},
                         {{ reserva.paciente?.nombres }}
                     </td>
-
                     <td>
-                        {{ reserva.medico?.id }}
+                        Matrícula: {{ reserva.medico?.matricula ?? '-' }}
                     </td>
-
                     <td>
-                        <span
-                            class="estado"
-                            [ngClass]="reserva.estado.toLowerCase()">
+                        <span class="estado" [ngClass]="reserva.estado.toLowerCase()">
                             {{ reserva.estado }}
                         </span>
                     </td>
 
                     <td>
-                        @if (reserva.estado === 'ACTIVO') {
-
-                            <div class="acciones">
-
-                                <p-button
-                                    label="Atendido"
-                                    severity="success"
-                                    (onClick)="abrirConfirmacion(reserva, 'ATENDIDO')"
-                                    [disabled]="guardandoAsistencia"
-                                />
-
-                                <p-button
-                                    label="Ausente"
-                                    severity="danger"
-                                    (onClick)="abrirConfirmacion(reserva, 'AUSENTE')"
-                                    [disabled]="guardandoAsistencia"
-                                />
-
-                            </div>
-
+                        @if (puedeCancelar(reserva)) {
+                            <p-button
+                                label="Cancelar"
+                                severity="danger"
+                                (onClick)="abrirConfirmacion(reserva)"
+                                [disabled]="cancelando"
+                            />
                         } @else {
-                            <span>—</span>
+                            <span>-</span>
                         }
                     </td>
                 </tr>
             </ng-template>
-
         </p-table>
-
     }
 
-    <!-- Ventana de confirmación -->
+    <!-- Confirmación de la cancelación -->
     <p-dialog
-        header="Confirmar asistencia"
-        [modal]="true"
-        [(visible)]="dialogoVisible"
+        header="Cancelar reserva"
+        [visible]="dialogoVisible"
+        (visibleChange)="dialogoVisible = $event"
         (onHide)="cerrarConfirmacion()"
-        [closable]="!guardandoAsistencia"
-        [closeOnEscape]="!guardandoAsistencia"
-        [dismissableMask]="false"
-        [style]="{ width: '28rem', maxWidth: '95vw' }"
+        [modal]="true"
+        [closable]="!cancelando"
+        [dismissableMask]="!cancelando"
+        [style]="{ width: '30rem' }"
     >
-
-        @if (reservaSeleccionada && estadoSeleccionado) {
-
+        @if (reservaSeleccionada; as reserva) {
             <p>
-                ¿Querés marcar al paciente
+                ¿Querés cancelar la reserva de
                 <strong>
-                    {{ reservaSeleccionada.paciente?.nombres }}
-                    {{ reservaSeleccionada.paciente?.apellidos }}
+                    {{ reserva.paciente?.apellidos }},
+                    {{ reserva.paciente?.nombres }}
                 </strong>
-                como
-                <strong>{{ estadoSeleccionado }}</strong>?
+                del {{ reserva.fechaHora | date:'dd/MM/yyyy HH:mm' }}?
             </p>
-
-            <div class="acciones-dialogo">
-
-                <p-button
-                    label="Volver"
-                    severity="secondary"
-                    (onClick)="cerrarConfirmacion()"
-                    [disabled]="guardandoAsistencia"
-                />
-
-                <p-button
-                    label="Confirmar"
-                    severity="success"
-                    (onClick)="confirmarAsistencia()"
-                    [loading]="guardandoAsistencia"
-                    [disabled]="guardandoAsistencia"
-                />
-
-            </div>
-
         }
+        <div class="acciones-dialogo">
+            <p-button
+                label="Volver"
+                severity="secondary"
+                (onClick)="cerrarConfirmacion()"
+                [disabled]="cancelando"    
+            />
 
+            <p-button
+                label="Sí, cancelar"
+                severity="danger"
+                (onClick)="confirmarCancelacion()"
+                [loading]="cancelando"    
+            />
+        </div>
     </p-dialog>
 </main>

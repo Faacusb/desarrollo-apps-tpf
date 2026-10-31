@@ -1,10 +1,10 @@
-import { Component } from "@angular/core";
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
+import { Component, inject } from "@angular/core";
+import { RouterLink, RouterLinkActive, RouterOutlet } from "@angular/router";
+import { AuthStore } from "../../auth/auth-store";
 
 export interface Menu{
     label: string;
     ruta: string;
-    icono: string
 }
 
 @Component({
@@ -19,12 +19,15 @@ export interface Menu{
 })
 export class AdminLayout {
 
-    menu: Menu[] = [];
-    constructor(private router: Router){ }
+    menu: Menu[] = [
+        { label: "Monitor de reservas", ruta: "reservas" },
+        { label: "Médicos", ruta: "medicos" },
+        { label: "Nueva reserva", ruta: "reservas/nueva" },
+    ];
+    private readonly authStore: AuthStore = inject(AuthStore);
 
     //metodo 
     cerrarSesion(): void{
-        sessionStorage.removeItem('accessToken');
-        this.router.navigate(['/reservas'])
+        this.authStore.cerrarSesion();
     }
 }

@@ -12,10 +12,16 @@ export const routes: Routes = [
     { path: "login", component: Login },
     { path: 'reservas', component: MisTurnosComponent },
     { path: 'agenda-medica', component: AgendaMedica },
-    { path: 'admin', component: AdminLayout },
-    { path: 'admin/reservas', component: MonitorReservas },
-    { path: 'admin/medicos', component: MedicosLista },
-    { path: 'admin/reservas/nueva', component: ReservaForm }
+    { 
+        path: 'admin',
+        component: AdminLayout,
+        children: [
+            { path: '', redirectTo: 'reservas', pathMatch: 'full' },
+            { path: 'reservas', component: MonitorReservas, pathMatch: 'full' },
+            { path: 'medicos', component: MedicosLista },
+            { path: 'reservas/nueva', component: ReservaForm },
+        ],
+    },
     // { path: '**', redirectTo: 'reservas' }
 ];
 

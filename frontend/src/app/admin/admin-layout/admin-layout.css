@@ -1,0 +1,119 @@
+:host {
+    /* componente completo- palteas para el area admin */
+    --admin-bg: #0b2a4a;
+    --admin-bg-soft: #174a75;
+    --admin-panel: rgba(255, 255, 255, 0.08);
+    --admin-border: rgba(255, 255, 255, 0.16);
+    --admin-text: #eaf4ff;
+    --admin-text-muted: #b8cb30;
+    --admin-accent: #7cc4ff;
+    --admin-danger: #dc3545;
+    --admin-danger-hover: #b02a37;
+
+    display: block;
+    min-height: 100vh;
+    background-color: var(--admin-bg);
+    color: var(--admin-text);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.barra-nav {
+    /* barra superior*/
+    background-color: var(--admin-bg-soft);
+    color: var(--admin-text);
+    padding: 12px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.contenedor {
+    /* contenedor interno de la barra*/
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.barra-nav h2 {
+    /* titulo */
+    margin: 0;
+    font-size: 1.20rem;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    color: var(--admin-text);
+}
+
+.lista {
+    /* ul del menu */
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+}
+
+.nav-item {
+    display: flex;
+}
+
+.nav-link {
+    /* links */
+    color: var(--admin-text-muted);
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: var(--admin-text);
+}
+.nav-link.active {
+    /* clase agregada por router link active */
+    background-color: var(--admin-text);
+    color: var(--admin-bg);
+    font-weight: 700;
+}
+
+.btn-cerrar-sesion {
+    /* boton cerrar sesion */
+    background-color: var(--admin-danger);
+    color: #fff;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 700;
+}
+.btn-cerrar-sesion:hover {
+    background-color: var(--admin-danger-hover);
+}
+
+@media (max-width: 700px) {
+    .contenedor {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 10px 15px;
+    }
+    .barra-nav h2 {
+        text-align: center;
+    }
+    .lista {
+        justify-content: center;
+    }
+    .nav-link {
+        display: block;
+        text-align: center;
+    }
+    .btn-cerrar-sesion {
+        width: 100%;
+    }
+}

@@ -25,7 +25,7 @@ export class AdminApiService {
         });
     }
     listarMedicos(): Observable<MedicoAdmin[]> {
-        return this.http.get<MedicoAdmin[]>(`${this.baseUrl}/medicos`, {
+        return this.http.get<MedicoAdmin[]>(`${this.baseUrl}/medicos/admin`, {
             headers: this.construirHeaders(),
         });
     }
