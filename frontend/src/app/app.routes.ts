@@ -6,8 +6,10 @@ import { AdminLayout } from './admin/admin-layout/admin-layout';
 import { MonitorReservas } from './admin/reservas-monitor/reservas-monitor';
 import { MedicosLista } from './admin/medicos-lista/medicos-lista';
 import { ReservaForm } from './admin/reservas-form/reservas-form';
+import { Login } from './auth/login/login';
 
 export const routes: Routes = [
+    { path: "login", component: Login },
     { path: 'reservas', component: MisTurnosComponent },
     { path: 'agenda-medica', component: AgendaMedica },
     { path: 'admin', component: AdminLayout },

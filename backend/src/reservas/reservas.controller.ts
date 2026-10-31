@@ -16,6 +16,9 @@ import { RolesUsuarioEnum } from "../common/enums/roles.enum.js";
     constructor(private readonly reservasService: ReservasService) { }
 
     // ---- PACIENTE ----
+    @Roles(RolesUsuarioEnum.PACIENTE)
+    @UseGuards(AuthGuard, RolesGuard)
+    @ApiBearerAuth()
     @Post()
       async crear(@Body() datos: CreateReservaDto) {
         return this.reservasService.create(datos);
@@ -33,13 +36,11 @@ import { RolesUsuarioEnum } from "../common/enums/roles.enum.js";
         return this.reservasService.obtenerHorarios(fecha, medicoId);
       }
     
-      /*@Get()
-      listar() {
-        return this.reservasService.listarTodo();
-      }*/
+  
 
-
-
+    @Roles(RolesUsuarioEnum.PACIENTE)
+    @UseGuards(AuthGuard, RolesGuard)
+    @ApiBearerAuth()
     @Get("paciente/:id")
     async obtenerReserva(
         @Param("id", ParseIntPipe) id: number
@@ -48,7 +49,9 @@ import { RolesUsuarioEnum } from "../common/enums/roles.enum.js";
         return await this.reservasService.obtenerReservaPacientes(id);
     }
 
-
+    @Roles(RolesUsuarioEnum.PACIENTE)
+    @UseGuards(AuthGuard, RolesGuard)
+    @ApiBearerAuth()
     @Patch(":id")
     async cancelarReservapaciente(
         @Param('id') id: number,
