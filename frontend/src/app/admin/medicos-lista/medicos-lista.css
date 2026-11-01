@@ -1,44 +1,178 @@
-.contenedor {
-  padding: 24px;
+/* Componente */
+:host {
+    display: block;
+    padding-bottom: 50px;
+    color: #263445;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Contenedor principal */
+.contenedor {
+    width: 100%;
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+}
+
+/* Título */
 .contenedor h2 {
-  margin-bottom: 24px;
+    margin: 0 0 20px;
+    padding-bottom: 15px;
+    color: #0b2a4a;
+    font-size: 25px;
+    font-weight: 600;
+    border-bottom: 2px solid #e8edf2;
+}
+
+/* Botones PrimeNG */
+:host ::ng-deep .p-button {
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Tabla */
+:host ::ng-deep .p-datatable {
+    margin-top: 20px;
+    border: 1px solid #e8edf2;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+:host ::ng-deep .p-datatable-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+:host ::ng-deep .p-datatable-thead > tr > th {
+    padding: 14px 12px;
+    background-color: #f1f5f9;
+    color: #344256;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr > td {
+    padding: 13px 12px;
+    background-color: #ffffff;
+    color: #344256;
+    font-size: 14px;
+    border-bottom: 1px solid #e8edf2;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr:hover > td {
+    background-color: #f8fafc;
+}
+
+/* Mensajes */
+.mensaje-exito,
+.mensaje-error {
+    padding: 12px 15px;
+    margin: 15px 0;
+    border-radius: 7px;
+    font-size: 14px;
 }
 
 .mensaje-exito {
-  color: #15803d;
-  margin-bottom: 16px;
+    color: #176b3a;
+    background-color: #e8f5ec;
+    border: 1px solid #b9dfc5;
 }
 
 .mensaje-error {
-  color: #dc2626;
-  margin-bottom: 16px;
+    color: #a52a2a;
+    background-color: #fcecec;
+    border: 1px solid #edc1c1;
 }
 
+/* Sin resultados */
 .vacio {
-  padding: 20px;
-  text-align: center;
-  color: #777;
+    margin-top: 20px;
+    padding: 20px;
+    color: #687789;
+    background-color: #f8fafc;
+    border: 1px solid #e8edf2;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
 }
 
+/* Formulario de actualización de tarifa */
 .formulario-tarifa {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 300px;
+}
+
+.formulario-tarifa label {
+    color: #344256;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .formulario-tarifa input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 15px;
+    width: 100%;
+    min-height: 43px;
+    padding: 10px 12px;
+    border: 1px solid #cbd5df;
+    border-radius: 7px;
+    background-color: #ffffff;
+    color: #263445;
+    font-family: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
 }
 
+.formulario-tarifa input:focus {
+    outline: none;
+    border-color: #3678c9;
+    box-shadow: 0 0 0 3px rgba(54, 120, 201, 0.13);
+}
+
+/* Acciones del diálogo */
 .acciones-dialogo {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+/* Adaptación a celulares */
+@media (max-width: 700px) {
+    .contenedor {
+        margin: 15px auto;
+        padding: 20px;
+    }
+
+    .contenedor h2 {
+        font-size: 21px;
+    }
+
+    .formulario-tarifa {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .acciones-dialogo {
+        justify-content: center;
+    }
+
+    :host ::ng-deep .p-datatable {
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .contenedor {
+        padding: 16px;
+    }
 }

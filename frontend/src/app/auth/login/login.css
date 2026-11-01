@@ -1,31 +1,154 @@
+/* Componente */
 :host {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #0b2a4a;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 #main {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
-    height: 55vh;
-    max-width: 20rem;
-    width: 80vw;
-    background-color: lightcyan;
-    border-radius: 25px;
+    width: 100%;
+    max-width: 400px;
+    padding: 40px;
+    gap: 12px;
+    background-color: #ffffff;
+    color: #263445;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
 }
 
-#nombre{
-    margin-bottom: 1rem;
-}
-
-#clave{
-    margin-bottom: 1rem;
-}
-
-#header{
+#header {
+    margin: 0 0 20px;
     text-align: center;
+    color: #0b2a4a;
+}
+
+#header h1,
+#header h2 {
+    margin: 0 0 10px;
+    font-size: 26px;
+    font-weight: 600;
+}
+
+#header p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#nombre,
+#clave {
+    width: 100%;
+    min-height: 46px;
+    margin-bottom: 15px;
+    padding: 12px;
+    border: 1px solid #cbd5df;
+    border-radius: 7px;
+    background-color: #ffffff;
+    color: #263445;
+    font-family: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+#nombre:focus,
+#clave:focus {
+    outline: none;
+    border-color: #3678c9;
+    box-shadow: 0 0 0 3px rgba(54, 120, 201, 0.13);
+}
+
+#main label {
+    display: block;
+    margin: 0;
+    color: #344256;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#main button {
+    width: 100%;
+    min-height: 46px;
+    margin-top: 18px;
+    padding: 13px 18px;
+    border: none;
+    border-radius: 7px;
+    background-color: #286bb5;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+#main input {
+    width: 100%;
+    min-height: 46px;
+    padding: 12px;
+    border: 1px solid #cbd5df;
+    border-radius: 7px;
+    box-sizing: border-box;
+}
+/* Contraseña */
+#main p-password {
+    display: block;
+    width: 100%;
+}
+
+/* Botón de inicio de sesión */
+#main p-button {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+}
+
+#main button:hover:not(:disabled) {
+    background-color: #1e548f;
+    transform: translateY(-1px);
+}
+
+#main button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Estilos internos de PrimeNG */
+:host ::ng-deep .p-password,
+:host ::ng-deep .p-password input {
+    width: 100%;
+}
+
+:host ::ng-deep .p-button {
+    width: 100%;
+    min-height: 46px;
+    justify-content: center;
+    border-radius: 7px;
+    font-weight: 600;
+}
+
+/* Adaptación a celulares */
+@media (max-width: 600px) {
+    :host {
+        padding: 15px;
+    }
+
+    #main {
+        padding: 25px 20px;
+    }
+
+    #header h1,
+    #header h2 {
+        font-size: 22px;
+    }
 }
