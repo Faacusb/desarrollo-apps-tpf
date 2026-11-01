@@ -1,113 +1,148 @@
+/* Componente */
 :host {
     display: block;
-    color: var(--admin-text, #eaf4ff);
-}
-
-.contenedor {
-    max-width: 1000px;
-    margin: 30px auto;
-    padding: 24px;
+    padding-bottom: 50px;
+    color: #263445;
     font-family: Arial, Helvetica, sans-serif;
 }
-h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    color: var(--admin-text, #eaf4ff);
+
+/* Contenedor principal */
+.contenedor {
+    width: 100%;
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    color: #263445;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
 }
+
+/* Título */
+.contenedor h2 {
+    margin: 0 0 20px;
+    padding-bottom: 15px;
+    color: #0b2a4a;
+    font-size: 25px;
+    font-weight: 600;
+    border-bottom: 2px solid #e8edf2;
+}
+
+/* Filtros */
 .filtros {
-    /* barra de filtros */
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
     gap: 15px;
-    padding: 15px;
+    padding: 18px;
     margin-bottom: 20px;
-    border: 1px solid var(--admin-border, rgba(255, 255, 255, 0.16));
-    background-color: var(--admin-panel, rgba(255, 255, 255, 0.08));
+    background-color: #f8fafc;
+    border: 1px solid #e8edf2;
     border-radius: 8px;
 }
+
+/* Campos */
 .campo {
-    /* cada label y control */
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     flex: 1 1 160px;
     min-width: 150px;
 }
+
 .campo label {
-    font-size: 0.9rem;
-    font-weight: 800;
-    color: var(--admin-text-muted, #b8cbe0);
+    color: #344256;
+    font-size: 14px;
+    font-weight: 600;
 }
-.campo select, 
+
+.campo select,
 .campo input {
     width: 100%;
-    box-sizing: border-box;
-    padding: 9px 10px;
-    border: 1px solid #7fa7c9;
-    border-radius: 6px;
-    background-color: #f4f8ff;
-    color: #1f2933;
+    min-height: 43px;
+    padding: 10px 12px;
+    border: 1px solid #cbd5df;
+    border-radius: 7px;
+    background-color: #ffffff;
+    color: #263445;
     font-family: inherit;
-    font-size: 0.95rem;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
-.campo select:focus, 
+
+.campo select:focus,
 .campo input:focus {
     outline: none;
-    border-color: var(--admin-accent, #7cc4ff);
-    box-shadow: 0 0 0 2px rgba(124, 196, 255, 0.25);
+    border-color: #3678c9;
+    box-shadow: 0 0 0 3px rgba(54, 120, 201, 0.13);
 }
-.campo select:disabled {
-    background-color: #dce6f2;
-    color: #6b7a8c;
+
+.campo select:disabled,
+.campo input:disabled {
+    background-color: #f1f3f5;
+    color: #8a949f;
     cursor: not-allowed;
 }
 
+/* Botones de filtros */
 .acciones-filtros {
-    /* botones de los filtros */
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     margin-left: auto;
     flex-wrap: wrap;
 }
 
-.mensaje {
-    margin-top: 15px;
-    color: var(--admin-text-muted, #b8cbe0);
-}
-.mensaje-error {
-    margin-top: 15px;
-    padding: 12px 15px;
-    background-color: rgba(220, 53, 69, 0.18);
-    color: #ffb3bd;
-    border: 1px solid rgba(220, 53, 69, 0.45);
-    border-radius: 8px;
+/* Botones PrimeNG */
+:host ::ng-deep .p-button {
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 600;
 }
 
-.mensaje-exito {
-    margin-top: 15px;
-    padding: 12px 15px;
-    background-color: rgba(25, 135, 84, 0.18);
-    color: #a3e4c1;
-    border: 1px solid rgba(25, 138, 84, 0.45);
-    border-radius: 8px;
-}
-
-.vacio {
+/* Tabla */
+:host ::ng-deep .p-datatable {
+    display: block;
     margin-top: 20px;
-    padding: 20px;
-    background-color:var(--admin-panel, rgba(255, 255, 255, 0.08));
-    color: var(--admin-text-muted, #b8cbe0);
-    border: 1px solid var(--admin-border, rgba(255, 255, 255, 0.16));
+    border: 1px solid #e8edf2;
     border-radius: 8px;
-    text-align: center;
+    overflow: hidden;
 }
 
+:host ::ng-deep .p-datatable-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+:host ::ng-deep .p-datatable-thead > tr > th {
+    padding: 14px 12px;
+    background-color: #f1f5f9;
+    color: #344256;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr > td {
+    padding: 13px 12px;
+    background-color: #ffffff;
+    color: #344256;
+    font-size: 14px;
+    border-bottom: 1px solid #e8edf2;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr:hover > td {
+    background-color: #f8fafc;
+}
+
+/* Estados de las reservas */
 .estado {
-    /* estados... */
     font-weight: 700;
 }
+
 .activo {
     color: #198754;
 }
@@ -124,41 +159,91 @@ h2 {
     color: #6c757d;
 }
 
-p-table {
-    /* tabla */
-    display: block;
-    margin-top: 20px;
+/* Mensajes */
+.mensaje {
+    margin-top: 15px;
+    color: #687789;
+    font-size: 14px;
 }
+
+.mensaje-error,
+.mensaje-exito {
+    margin-top: 15px;
+    padding: 12px 15px;
+    border-radius: 7px;
+    font-size: 14px;
+}
+
+.mensaje-error {
+    color: #a52a2a;
+    background-color: #fcecec;
+    border: 1px solid #edc1c1;
+}
+
+.mensaje-exito {
+    color: #176b3a;
+    background-color: #e8f5ec;
+    border: 1px solid #b9dfc5;
+}
+
+/* Sin resultados */
+.vacio {
+    margin-top: 20px;
+    padding: 20px;
+    color: #687789;
+    background-color: #f8fafc;
+    border: 1px solid #e8edf2;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Diálogo de confirmación */
 .acciones-dialogo {
-    /* botones del dialogo */
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     margin-top: 20px;
     flex-wrap: wrap;
 }
 
+/* Adaptación a celulares */
 @media (max-width: 700px) {
     .contenedor {
-        margin: 15px;
-        padding: 16px;
+        margin: 15px auto;
+        padding: 20px;
     }
+
+    .contenedor h2 {
+        font-size: 21px;
+    }
+
     .filtros {
         flex-direction: column;
         align-items: stretch;
     }
+
     .campo {
         min-width: 100%;
     }
-    .acciones-filtros{ 
+
+    .acciones-filtros {
         margin-left: 0;
         justify-content: stretch;
     }
-    .acciones-dialogo{
+
+    .acciones-dialogo {
         justify-content: center;
     }
-    p-table {
-        overflow-x: auto; /* permite scroll horizontal */
+
+    :host ::ng-deep .p-datatable {
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .contenedor {
+        padding: 16px;
     }
 }
