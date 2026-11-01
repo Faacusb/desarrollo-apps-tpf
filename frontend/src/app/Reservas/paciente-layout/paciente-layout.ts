@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import {
-    RouterLink,
     RouterLinkActive,
     RouterOutlet
 } from '@angular/router';
@@ -17,7 +16,6 @@ export interface MenuPaciente {
     standalone: true,
     imports: [
         RouterOutlet,
-        RouterLink,
         RouterLinkActive
     ],
     templateUrl: './paciente-layout.html',
@@ -26,7 +24,8 @@ export interface MenuPaciente {
 export class PacienteLayout {
 
     menu: MenuPaciente[] = [
-        { label: 'Mis turnos', ruta: '' }
+        { label: 'Mis turnos', ruta: '' },
+        { label: 'Solicitar turno', ruta: 'nueva' }
     ];
 
     private readonly authStore = inject(AuthStore);

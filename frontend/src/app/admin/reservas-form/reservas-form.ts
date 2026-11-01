@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import {Component,OnInit,ChangeDetectorRef} from '@angular/core';
 import { MedicoAdmin, PacienteOpcion, CrearReservaAdmin, HorariosDisponibles} from "../admin.models";
 import { CommonModule} from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -7,7 +7,7 @@ import { ButtonModule } from "primeng/button";
 import { DialogModule } from "primeng/dialog";
 import { AdminApiService } from "../admin-api.services";
 import { Router } from '@angular/router';
-import { finalize } from 'rxjs';
+
 
 
 @Component({
@@ -48,7 +48,9 @@ export class ReservaForm implements OnInit {
     // Inyectar servicios
     constructor(
         private readonly apiService: AdminApiService,
-        private readonly router: Router
+        private readonly router: Router,
+        private readonly cdr: ChangeDetectorRef
+
     ) {}
 
     ngOnInit(): void {
@@ -230,13 +232,7 @@ export class ReservaForm implements OnInit {
     this.mensajeExito = '';
     this.reservaCreadaId = null;
 
-    this.apiService.crearReserva(datos).pipe(
-
-        finalize(() => {
-            this.guardando = false;
-        })
-
-    ).subscribe({
+    this.apiService.crearReserva(datos).subscribe({
 
         next: (respuesta) => {
 
@@ -257,6 +253,9 @@ export class ReservaForm implements OnInit {
                 : 'Reserva creada correctamente.';
 
             this.hora = '';
+            this.guardando = false;
+
+            this.cdr.detectChanges();
 
             // Actualizar los horarios disponibles
             this.cargarHorarios();
@@ -271,6 +270,10 @@ export class ReservaForm implements OnInit {
             this.mensajeError =
                 error.error?.message ||
                 'No se pudo crear la reserva.';
+
+            this.guardando = false;
+
+            this.cdr.detectChanges();
         }
     });
 }

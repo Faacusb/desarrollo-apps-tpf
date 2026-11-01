@@ -73,3 +73,10 @@ export const ESTADOS_RESERVAS: OpcionEstado[] = [
     { label: 'Ausente', value: 'AUSENTE'},
     { label: 'Cancelado', value: 'CANCELADO'},
 ]
+
+export interface CrearReservaPaciente {
+    fecha: string;
+    hora: string;
+    idMedico: number;
+    idPaciente: number;
+}

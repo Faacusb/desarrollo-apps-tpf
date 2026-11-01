@@ -9,6 +9,7 @@ import { ReservaForm } from './admin/reservas-form/reservas-form';
 import { Login } from './auth/login/login';
 import {authGuard,roleGuard} from './auth/guards/auth.guards';
 import { PacienteLayout } from './Reservas/paciente-layout/paciente-layout';
+import { CrearReservaPacienteComponent } from './Reservas/crear-reserva/crear-reserva';
 
 export const routes: Routes = [
     { path: "login", component: Login },
@@ -32,6 +33,10 @@ export const routes: Routes = [
                 path: '',
                 component: MisTurnosComponent,
                 pathMatch: 'full'
+            },
+            {
+                path: 'nueva',
+                component: CrearReservaPacienteComponent
             }
         ]
     },

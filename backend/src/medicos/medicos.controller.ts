@@ -307,7 +307,7 @@ export class MedicosController {
     
     @Get("admin")
     @UseGuards(AuthGuard, RolesGuard)
-    @Roles(RolesUsuarioEnum.ADMINISTRADOR)
+    @Roles(RolesUsuarioEnum.ADMINISTRADOR, RolesUsuarioEnum.PACIENTE)
     @ApiBearerAuth()
 
     @ApiOperation({

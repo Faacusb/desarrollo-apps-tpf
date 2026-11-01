@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from 'rxjs';
 import { CrearReservaAdmin, MedicoAdmin, PacienteOpcion, HorariosDisponibles, ReservaAdmin, ReservaFiltros, RespuestaId } from "./admin.models";
+import { CrearReservaPaciente } from "./admin.models";
 
 @Injectable({
     providedIn: 'root'
@@ -60,6 +61,18 @@ export class AdminApiService {
         );
     }
 
+    // Crear reserva como paciente
+    crearReservaPaciente(
+        datos: CrearReservaAdmin
+    ): Observable<{ id: number }> {
+
+        return this.http.post<{ id: number }>(
+            `${this.baseUrl}/reservas`,
+            datos,
+            { headers: this.construirHeaders() }
+        );
+    }
+
     listarReservasPaciente(idPaciente: number): Observable<ReservaAdmin[]> {
         return this.http.get<ReservaAdmin[]>(
             `${this.baseUrl}/reservas/paciente/${idPaciente}`,
@@ -74,6 +87,8 @@ export class AdminApiService {
             { headers: this.construirHeaders() }
         );
     }
+
+
 
     //metodos privados
     private construirHeaders(): HttpHeaders {

@@ -1,0 +1,142 @@
+<main class="contenedor">
+
+    <h1>Solicitar nuevo turno</h1>
+
+    <p class="descripcion">
+        Seleccioná un médico, una fecha y un horario para reservar tu consulta.
+    </p>
+
+    @if (mensajeExito) {
+        <p class="mensaje-exito" role="status">
+            {{ mensajeExito }}
+        </p>
+    }
+
+    @if (mensajeError) {
+        <p class="mensaje-error" role="alert">
+            {{ mensajeError }}
+        </p>
+    }
+
+    <form (ngSubmit)="guardar()">
+
+        <!-- Selección del médico -->
+        <div class="campo">
+
+            <label for="medico">Médico</label>
+
+            <select
+                id="medico"
+                name="idMedico"
+                [(ngModel)]="idMedico"
+                (ngModelChange)="onMedicoChange()"
+                [disabled]="cargandoMedicos() || guardando">
+
+                <option [ngValue]="null">
+                    Seleccioná un médico
+                </option>
+
+                @for (medico of medicos(); track medico.id) {
+                    <option [ngValue]="medico.id">
+                        Matrícula {{ medico.matricula }}
+                        - Tarifa:
+                        {{ medico.valorConsulta | currency:'ARS':'$':'1.0-0' }}
+                    </option>
+                }
+
+            </select>
+
+            @if (cargandoMedicos()) {
+                <small>Cargando médicos...</small>
+            }
+
+            @if (!cargandoMedicos() && medicos().length === 0) {
+                <small>No hay médicos disponibles.</small>
+            }
+
+        </div>
+
+        <!-- Selección de fecha -->
+        <div class="campo">
+
+            <label for="fecha">Fecha del turno</label>
+
+            <input
+                id="fecha"
+                type="date"
+                name="fecha"
+                [(ngModel)]="fecha"
+                [min]="fechaMinima"
+                [max]="fechaMaxima"
+                (ngModelChange)="onFechaChange()"
+                [disabled]="guardando"
+            />
+
+            <small>
+                Podés reservar con hasta 30 días de anticipación.
+            </small>
+
+        </div>
+
+        <!-- Selección del horario -->
+        <div class="campo">
+
+            <label for="hora">Horario disponible</label>
+
+            <select
+                id="hora"
+                name="hora"
+                [(ngModel)]="hora"
+                [disabled]="!horariosConsultados || cargandoHorarios || guardando">
+
+                <option value="">
+                    Seleccioná un horario
+                </option>
+
+                @for (horario of horarios; track horario) {
+                    <option [value]="horario">
+                        {{ horario }}
+                    </option>
+                }
+
+            </select>
+
+            @if (cargandoHorarios) {
+                <small>Consultando horarios disponibles...</small>
+            }
+
+            @if (horariosConsultados && horarios.length === 0) {
+                <small>
+                    No hay horarios disponibles para esa fecha.
+                </small>
+            }
+
+        </div>
+
+        <!-- Botones -->
+        <div class="acciones">
+
+            <button
+                type="button"
+                class="btn-volver"
+                (click)="volverAMisTurnos()"
+                [disabled]="guardando">
+
+                Volver a mis turnos
+
+            </button>
+
+            <button
+                type="submit"
+                class="btn-crear"
+                [disabled]="guardando || cargandoMedicos()">
+
+                {{ guardando ? 'Guardando...' : 'Confirmar turno' }}
+
+            </button>
+
+        </div>
+
+    </form>
+
+</main>
