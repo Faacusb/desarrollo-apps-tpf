@@ -10,6 +10,7 @@ import { Login } from './auth/login/login';
 import {authGuard,roleGuard} from './auth/guards/auth.guards';
 import { PacienteLayout } from './Reservas/paciente-layout/paciente-layout';
 import { CrearReservaPacienteComponent } from './Reservas/crear-reserva/crear-reserva';
+import { MedicoLayout } from './agenda-medica/medico-layout/medico-layout';
 
 export const routes: Routes = [
     { path: "login", component: Login },
@@ -41,12 +42,17 @@ export const routes: Routes = [
         ]
     },
 
-    { 
-        path: 'agenda-medica', 
-        component: AgendaMedica,
-        canActivate: [
-            authGuard,
-            roleGuard(['MEDICO'])
+    {
+        path: 'agenda-medica',
+        component: MedicoLayout,
+        canActivate: [authGuard, roleGuard(['MEDICO'])],
+        canActivateChild: [authGuard, roleGuard(['MEDICO'])],
+        children: [
+            {
+                path: '',
+                component: AgendaMedica,
+                pathMatch: 'full'
+            }
         ]
     },
 

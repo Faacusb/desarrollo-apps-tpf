@@ -1,39 +1,138 @@
+/* Componente */
+:host {
+    display: block;
+    color: #263445;
+    font-family: Arial, Helvetica, sans-serif;
+}
 
-/* CONTENEDOR PRINCIPAL */
+/* Contenedor principal */
 .contenedor {
-    max-width: 900px;
+    width: 100%;
+    max-width: 1000px;
     margin: 30px auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
 }
 
-/* Título */
-h1 {
-    color: #174a75;
+/* Título y descripción */
+.contenedor h1 {
+    margin: 0 0 15px;
+    color: #0b2a4a;
+    font-size: 25px;
+    font-weight: 600;
+    border-bottom: 2px solid #e8edf2;
+    padding-bottom: 15px;
 }
 
-/* FILTRO POR FECHA */
-.filtro-fecha {
+.descripcion {
+    margin-bottom: 25px;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Filtros */
+.filtros {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 15px;
+    padding: 18px;
+    margin-bottom: 20px;
+    background-color: #f8fafc;
+    border: 1px solid #e8edf2;
+    border-radius: 8px;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1 1 180px;
+    min-width: 150px;
+}
+
+.campo label {
+    color: #344256;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.campo input {
+    width: 100%;
+    min-height: 43px;
+    padding: 10px 12px;
+    border: 1px solid #cbd5df;
+    border-radius: 7px;
+    background-color: #ffffff;
+    color: #263445;
+    font-size: 14px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.campo input:focus {
+    outline: none;
+    border-color: #3678c9;
+    box-shadow: 0 0 0 3px rgba(54, 120, 201, 0.13);
+}
+
+/* Acciones de filtros */
+.acciones-filtros {
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin-top: 25px;
-    margin-bottom: 25px;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-left: auto;
     flex-wrap: wrap;
 }
 
-.filtro-fecha label {
-    font-weight: bold;
+/* Botones PrimeNG */
+:host ::ng-deep .p-button {
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 600;
 }
 
-.filtro-fecha input {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-family: inherit;
+/* Tabla */
+:host ::ng-deep .p-datatable {
+    margin-top: 25px;
+    border: 1px solid #e8edf2;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
-/* ESTADOS DE LAS RESERVAS */
+:host ::ng-deep .p-datatable-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+:host ::ng-deep .p-datatable-thead > tr > th {
+    padding: 14px 12px;
+    background-color: #f1f5f9;
+    color: #344256;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr > td {
+    padding: 13px 12px;
+    color: #344256;
+    font-size: 14px;
+    border-bottom: 1px solid #e8edf2;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr:hover > td {
+    background-color: #f8fafc;
+}
+
+/* Estados de las reservas */
+/* Estados de las reservas */
 .estado {
     font-weight: bold;
 }
@@ -54,9 +153,7 @@ h1 {
     color: #6c757d;
 }
 
-/* BOTONES DE ASISTENCIA */
-
-/* Separación entre Atendido y Ausente */
+/* Acciones de la tabla */
 .acciones {
     display: flex;
     align-items: center;
@@ -64,68 +161,77 @@ h1 {
     flex-wrap: wrap;
 }
 
-/* Botones Volver y Confirmar del diálogo */
+/* Mensajes */
+.mensaje {
+    margin-top: 15px;
+    color: #687789;
+    font-size: 14px;
+}
+
+.mensaje-exito,
+.mensaje-error {
+    padding: 12px 15px;
+    margin: 15px 0;
+    border-radius: 7px;
+    font-size: 14px;
+}
+
+.mensaje-exito {
+    color: #176b3a;
+    background-color: #e8f5ec;
+    border: 1px solid #b9dfc5;
+}
+
+.mensaje-error {
+    color: #a52a2a;
+    background-color: #fcecec;
+    border: 1px solid #edc1c1;
+}
+
+.vacio {
+    margin-top: 20px;
+    padding: 20px;
+    color: #687789;
+    background-color: #f8fafc;
+    border: 1px solid #e8edf2;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Diálogo de confirmación */
 .acciones-dialogo {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     margin-top: 20px;
     flex-wrap: wrap;
 }
 
-
-/* MENSAJES */
-
-/* Mensaje durante la carga */
-.mensaje {
-    margin-top: 20px;
-    color: #6c757d;
-}
-
-/* Mensaje de error */
-.mensaje-error {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #f8d7da;
-    color: #842029;
-    border-radius: 8px;
-}
-
-/* Mensaje de operación exitosa */
-.mensaje-exito {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #d1e7dd;
-    color: #0f5132;
-    border-radius: 8px;
-}
-
-/* Mensaje cuando no hay turnos */
-.vacio {
-    margin-top: 20px;
-    padding: 20px;
-    background-color: #f1f3f5;
-    color: #495057;
-    border-radius: 8px;
-}
-
-/* ADAPTACIÓN A CELULARES */
-@media (max-width: 600px) {
-
+/* Adaptación a celulares */
+@media (max-width: 700px) {
     .contenedor {
         margin: 15px auto;
-        padding: 15px;
+        padding: 20px;
     }
 
-    .filtro-fecha {
+    .contenedor h1 {
+        font-size: 21px;
+    }
+
+    .filtros {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .filtro-fecha input {
-        width: 100%;
-        box-sizing: border-box;
+    .campo {
+        min-width: 100%;
+    }
+
+    .acciones-filtros {
+        margin-left: 0;
+        justify-content: stretch;
     }
 
     .acciones {
@@ -135,5 +241,11 @@ h1 {
 
     .acciones-dialogo {
         justify-content: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .contenedor {
+        padding: 16px;
     }
 }

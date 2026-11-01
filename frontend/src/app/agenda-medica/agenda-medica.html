@@ -6,25 +6,36 @@
     <p>Consultá tus turnos y registrá la asistencia de los pacientes.</p>
 
     <!-- Filtro por fecha -->
-    <div class="filtro-fecha">
+    <!-- Filtros -->
+    <section class="filtros">
 
-        <label for="fecha">Seleccionar fecha:</label>
+        <div class="campo">
+            <label for="fecha">Fecha</label>
 
-        <input
-            type="date"
-            id="fecha"
-            name="fecha"
-            [(ngModel)]="fechaSeleccionada"
-        />
+            <input
+                id="fecha"
+                type="date"
+                [(ngModel)]="fechaSeleccionada"
+            />
+        </div>
 
-        <p-button
-            label="Consultar agenda"
-            (onClick)="consultarAgenda()"
-            [disabled]="!fechaSeleccionada || cargando"
-            [loading]="cargando"
-        />
+        <div class="acciones-filtros">
+            <p-button
+                label="Aplicar filtro"
+                (onClick)="consultarAgenda()"
+                [disabled]="cargando"
+                [loading]="cargando"
+            />
 
-    </div>
+            <p-button
+                label="Limpiar"
+                severity="secondary"
+                (onClick)="limpiarFiltro()"
+                [disabled]="cargando"
+            />
+        </div>
+
+    </section>
 
     <!-- Indicador de carga -->
     @if (cargando) {
@@ -50,7 +61,7 @@
     <!-- Mensaje cuando no hay turnos -->
     @if (consultaRealizada && !cargando && turnos.length === 0 && !mensajeError) {
         <p class="vacio">
-            No tenés turnos registrados para la fecha seleccionada.
+            No tenés turnos registrados para mostrar.
         </p>
     }
 

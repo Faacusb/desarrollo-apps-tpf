@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -18,7 +18,8 @@ import { DialogModule } from 'primeng/dialog';
     templateUrl: './agenda-medica.html',
     styleUrl: './agenda-medica.css',
 })
-export class AgendaMedica {
+
+export class AgendaMedica implements OnInit {
 
     // Inyectar servicios
     constructor(
@@ -54,6 +55,10 @@ export class AgendaMedica {
     // Indica si se está guardando una asistencia
     guardandoAsistencia: boolean = false;
 
+    
+    ngOnInit(): void {
+        this.consultarAgenda();
+    }
 
     // Consultar agenda del médico autenticado
     consultarAgenda(): void {
@@ -64,11 +69,6 @@ export class AgendaMedica {
         this.mensajeExito = '';
         this.consultaRealizada = false;
 
-        // Validar la fecha
-        if (!this.fechaSeleccionada) {
-            this.mensajeError = 'Seleccioná una fecha.';
-            return;
-        }
 
         // Obtener el token JWT
         const token = sessionStorage.getItem('accessToken');
@@ -87,13 +87,17 @@ export class AgendaMedica {
         this.cargando = true;
 
         // Consultar el backend NestJS
+        const params: Record<string, string> = {};
+
+        if (this.fechaSeleccionada) {
+            params['fecha'] = this.fechaSeleccionada;
+        }
+
         this.http.get<any[]>(
             '/api/v1/medicos/mi-agenda',
             {
                 headers,
-                params: {
-                    fecha: this.fechaSeleccionada
-                }
+                params
             }
         ).subscribe({
 
@@ -101,7 +105,11 @@ export class AgendaMedica {
             next: (respuesta) => {
 
                 // Guardar los turnos recibidos
-                this.turnos = respuesta;
+                this.turnos = [...respuesta].sort(
+                    (a, b) =>
+                        new Date(a.fechaHora).getTime() -
+                        new Date(b.fechaHora).getTime()
+                );
 
                 // Finalizar carga
                 this.cargando = false;
@@ -281,5 +289,10 @@ export class AgendaMedica {
                 this.cdr.markForCheck();
             }
         });
+    }
+
+    limpiarFiltro(): void {
+        this.fechaSeleccionada = '';
+        this.consultarAgenda();
     }
 }

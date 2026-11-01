@@ -1,0 +1,97 @@
+:host {
+    --medico-bg: #0b2a4a;
+    --medico-bg-soft: #174a75;
+    --medico-text: #eaf4ff;
+    --medico-text-muted: #b8cbe0;
+    --medico-danger: #dc3545;
+    --medico-danger-hover: #b02a37;
+
+    display: block;
+    min-height: 100vh;
+    background-color: var(--medico-bg);
+    color: var(--medico-text);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Barra de navegación */
+.barra-nav {
+    background-color: var(--medico-bg-soft);
+    color: var(--medico-text);
+    padding: 12px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+/* Contenedor de navegación */
+.contenedor-nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Título del portal */
+.titulo-portal h2 {
+    margin: 0;
+    font-size: 1.20rem;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    color: var(--medico-text);
+}
+
+
+
+/* Cerrar sesión */
+.btn-cerrar-sesion {
+    background-color: var(--medico-danger);
+    color: #ffffff;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background-color 0.2s;
+}
+
+.btn-cerrar-sesion:hover {
+    background-color: var(--admin-danger-hover);
+}
+
+/* Contenido */
+.contenido {
+    width: 100%;
+    min-height: calc(100vh - 65px);
+}
+
+/* Adaptación a celulares */
+@media (max-width: 700px) {
+
+    .contenedor-nav {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 10px 15px;
+    }
+
+    .titulo-portal {
+        text-align: center;
+    }
+
+    nav {
+        justify-content: center;
+    }
+
+    nav a {
+        display: block;
+        text-align: center;
+    }
+
+    .btn-cerrar-sesion {
+        width: 100%;
+    }
+}

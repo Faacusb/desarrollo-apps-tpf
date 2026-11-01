@@ -1,3 +1,4 @@
+/* Contenedor del componente */
 :host {
     display: block;
     min-height: calc(100vh - 70px);
@@ -6,9 +7,10 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Contenedor principal */
 .contenedor {
     width: 100%;
-    max-width: 750px;
+    max-width: 1000px;
     margin: 15px auto;
     padding: 30px;
     background-color: #ffffff;
@@ -18,12 +20,14 @@
     box-sizing: border-box;
 }
 
+/* Título */
 .contenedor h1 {
     margin: 0 0 10px;
     color: #0b2a4a;
     font-size: 26px;
 }
 
+/* Descripción */
 .descripcion {
     margin-bottom: 28px;
     color: #64748b;
@@ -31,16 +35,26 @@
     line-height: 1.5;
 }
 
-.contenedor form {
+/* Filtros */
+.filtros {
     display: flex;
-    flex-direction: column;
-    gap: 22px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 15px;
+    padding: 18px;
+    margin-bottom: 25px;
+    background-color: #f8fafc;
+    border: 1px solid #e8edf2;
+    border-radius: 8px;
 }
 
+/* Campo de fecha */
 .campo {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    flex: 1 1 180px;
+    min-width: 150px;
 }
 
 .campo label {
@@ -49,7 +63,6 @@
     font-weight: 600;
 }
 
-.campo select,
 .campo input {
     width: 100%;
     min-height: 44px;
@@ -64,73 +77,118 @@
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.campo select:focus,
 .campo input:focus {
     outline: none;
     border-color: #3678c9;
     box-shadow: 0 0 0 3px rgba(54, 120, 201, 0.13);
 }
 
-.campo select:disabled,
 .campo input:disabled {
     background-color: #f1f3f5;
     color: #8a949f;
     cursor: not-allowed;
 }
 
-.campo small {
-    color: #687789;
-    font-size: 12px;
-}
-
-.acciones {
+/* Botones de los filtros */
+.acciones-filtros {
     display: flex;
+    align-items: center;
     justify-content: flex-end;
     gap: 12px;
-    margin-top: 10px;
-    padding-top: 22px;
-    border-top: 1px solid #e8edf2;
+    margin-left: auto;
+    flex-wrap: wrap;
 }
 
-.acciones button {
-    min-width: 155px;
-    padding: 12px 18px;
-    border: none;
+/* Botones PrimeNG */
+:host ::ng-deep .p-button {
     border-radius: 7px;
     font-size: 14px;
     font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.2s;
 }
 
-.btn-crear {
-    background-color: #286bb5;
-    color: #ffffff;
+/* Tabla */
+:host ::ng-deep .p-datatable {
+    margin-top: 25px;
+    border: 1px solid #e8edf2;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
-.btn-crear:hover:not(:disabled) {
-    background-color: #1e548f;
-    transform: translateY(-1px);
+:host ::ng-deep .p-datatable-table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
-.btn-volver {
-    background-color: #e8edf2;
+:host ::ng-deep .p-datatable-thead > tr > th {
+    padding: 14px 12px;
+    background-color: #f1f5f9;
     color: #344256;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+    border-bottom: 2px solid #e2e8f0;
 }
 
-.btn-volver:hover:not(:disabled) {
-    background-color: #d7dfe8;
+:host ::ng-deep .p-datatable-tbody > tr > td {
+    padding: 13px 12px;
+    background-color: #ffffff;
+    color: #344256;
+    font-size: 14px;
+    border-bottom: 1px solid #e8edf2;
 }
 
-.acciones button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+:host ::ng-deep .p-datatable-tbody > tr:hover > td {
+    background-color: #f8fafc;
+}
+
+/* Estados de las reservas */
+.estado {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.activo {
+    color: #176b3a;
+    background-color: #e8f5ec;
+}
+
+.atendido {
+    color: #205da8;
+    background-color: #e8f1fc;
+}
+
+.ausente {
+    color: #a52a2a;
+    background-color: #fcecec;
+}
+
+.cancelado {
+    color: #687789;
+    background-color: #edf0f3;
+}
+
+/* Acciones de la tabla */
+.acciones {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Mensajes */
+.mensaje {
+    margin-top: 15px;
+    color: #687789;
+    font-size: 14px;
 }
 
 .mensaje-exito,
 .mensaje-error {
     padding: 12px 15px;
-    margin-bottom: 20px;
+    margin: 15px 0;
     border-radius: 7px;
     font-size: 14px;
 }
@@ -147,7 +205,30 @@
     border: 1px solid #edc1c1;
 }
 
-@media (max-width: 600px) {
+/* Sin resultados */
+.vacio {
+    margin-top: 20px;
+    padding: 20px;
+    color: #687789;
+    background-color: #f8fafc;
+    border: 1px solid #e8edf2;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Diálogo de confirmación */
+.acciones-dialogo {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+/* Adaptación a celulares */
+@media (max-width: 700px) {
 
     :host {
         padding: 20px 12px;
@@ -161,11 +242,30 @@
         font-size: 22px;
     }
 
-    .acciones {
-        flex-direction: column-reverse;
+    .filtros {
+        flex-direction: column;
+        align-items: stretch;
     }
 
-    .acciones button {
-        width: 100%;
+    .campo {
+        min-width: 100%;
+    }
+
+    .acciones-filtros {
+        margin-left: 0;
+        justify-content: stretch;
+    }
+
+    .acciones {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .acciones-dialogo {
+        justify-content: center;
+    }
+
+    :host ::ng-deep .p-datatable {
+        overflow-x: auto;
     }
 }

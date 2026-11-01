@@ -1,64 +1,162 @@
+/* Componente */
+:host {
+    display: block;
+    color: #263445;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Contenedor principal */
 .contenedor {
-  max-width: 900px;
-  margin: 30px auto;
-  padding: 20px;
-  font-family: Arial, sans-serif;
+    width: 100%;
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
 }
 
-h1 {
-  color: #eaf4ff;
+/* Título */
+.contenedor h1 {
+    margin: 0 0 15px;
+    color: #0b2a4a;
+    font-size: 25px;
+    font-weight: 600;
+    border-bottom: 2px solid #e8edf2;
+    padding-bottom: 15px;
 }
 
-.turno {
-  margin-top: 20px;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  background-color: #fff;
+/* Mensajes */
+.mensaje-exito,
+.mensaje-error {
+    padding: 12px 15px;
+    margin: 15px 0;
+    border-radius: 7px;
+    font-size: 14px;
 }
 
-.estado {
-  font-weight: bold;
+.mensaje-exito {
+    color: #176b3a;
+    background-color: #e8f5ec;
+    border: 1px solid #b9dfc5;
 }
 
-.activo {
-  color: #198754;
+.mensaje-error {
+    color: #a52a2a;
+    background-color: #fcecec;
+    border: 1px solid #edc1c1;
 }
 
-.atendido {
-  color: #0d6efd;
-}
-
-.ausente {
-  color: #dc3545;
-}
-
-.cancelado {
-  color: #6c757d;
-}
-
-.btn-cancelar {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 6px;
-  background-color: #dc3545;
-  color: white;
-  cursor: pointer;
-}
-
-.btn-cancelar:hover {
-  background-color: #b02a37;
-}
-
-.vacio {
-  margin-top: 20px;
-  padding: 20px;
-  background-color: #f1f3f5;
-  border-radius: 8px;
-}
-
+/* Botón superior */
 .acciones-superiores {
     display: flex;
     justify-content: flex-start;
     margin-bottom: 25px;
+}
+
+/* Botones PrimeNG */
+:host ::ng-deep .p-button {
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Tabla */
+:host ::ng-deep .p-datatable {
+    margin-top: 15px;
+    border: 1px solid #e8edf2;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+:host ::ng-deep .p-datatable-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+:host ::ng-deep .p-datatable-thead > tr > th {
+    padding: 14px 12px;
+    background-color: #f1f5f9;
+    color: #344256;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr > td {
+    padding: 13px 12px;
+    color: #344256;
+    font-size: 14px;
+    border-bottom: 1px solid #e8edf2;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr:hover > td {
+    background-color: #f8fafc;
+}
+
+/* Estados de los turnos */
+.estado {
+    font-weight: bold;
+}
+
+.activo {
+    color: #198754;
+}
+
+.atendido {
+    color: #0d6efd;
+}
+
+.ausente {
+    color: #dc3545;
+}
+
+.cancelado {
+    color: #6c757d;
+}
+
+/* Sin turnos */
+.vacio {
+    margin-top: 20px;
+    padding: 20px;
+    color: #687789;
+    background-color: #f8fafc;
+    border: 1px solid #e8edf2;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Diálogo de cancelación */
+.acciones-dialogo {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+/* Adaptación a celulares */
+@media (max-width: 700px) {
+    .contenedor {
+        margin: 15px auto;
+        padding: 20px;
+    }
+
+    .contenedor h1 {
+        font-size: 21px;
+    }
+
+    .acciones-dialogo {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .contenedor {
+        padding: 16px;
+    }
 }

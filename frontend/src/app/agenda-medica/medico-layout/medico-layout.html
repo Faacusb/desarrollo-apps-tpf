@@ -1,0 +1,23 @@
+<header class="barra-nav">
+
+    <div class="contenedor-nav">
+
+        <div class="titulo-portal">
+            <h2>PORTAL MÉDICO</h2>
+        </div>
+
+
+        <button
+            class="btn-cerrar-sesion"
+            (click)="authStore.cerrarSesion()"
+        >
+            Cerrar sesión
+        </button>
+
+    </div>
+
+</header>
+
+<main class="contenido">
+    <router-outlet />
+</main>

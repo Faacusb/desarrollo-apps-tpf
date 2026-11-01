@@ -55,9 +55,9 @@ export class MedicosService {
     }
 
     // Método obtener agenda MEDICO
-    async obtenerAgenda(
+   async obtenerAgenda(
         idMedico: number,
-        fecha: string
+        fecha?: string
     ): Promise<Reserva[]> {
 
         // Verificar que el médico exista
@@ -67,33 +67,8 @@ export class MedicosService {
             throw new NotFoundException("No existe el médico");
         }
 
-        // Validar el formato de la fecha
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
-            throw new BadRequestException(
-                "La fecha debe tener formato YYYY-MM-DD"
-            );
-        }
-
-        // Calcular el inicio del día
-        const inicio = new Date(`${fecha}T00:00:00`);
-
-        if (
-            Number.isNaN(inicio.getTime()) ||
-            inicio.getFullYear() !== Number(fecha.slice(0, 4)) ||
-            inicio.getMonth() + 1 !== Number(fecha.slice(5, 7)) ||
-            inicio.getDate() !== Number(fecha.slice(8, 10))
-        ) {
-            throw new BadRequestException(
-                "La fecha ingresada no es válida"
-            );
-        }
-
-        // Calcular el inicio del día siguiente
-        const fin = new Date(inicio);
-        fin.setDate(fin.getDate() + 1);
-
-        // Obtener las reservas del médico con datos limitados del paciente
-        return await this.reservasRepository
+        // Construir consulta de reservas del médico
+        const consulta = this.reservasRepository
             .createQueryBuilder("reserva")
             .leftJoin("reserva.paciente", "paciente")
             .addSelect([
@@ -102,9 +77,40 @@ export class MedicosService {
                 "paciente.apellidos",
                 "paciente.nombres"
             ])
-            .where("reserva.medico = :idMedico", { idMedico })
-            .andWhere("reserva.fechaHora >= :inicio", { inicio })
-            .andWhere("reserva.fechaHora < :fin", { fin })
+            .where("reserva.medico = :idMedico", { idMedico });
+
+        // Si se recibió una fecha, filtrar solamente ese día
+        if (fecha) {
+
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+                throw new BadRequestException(
+                    "La fecha debe tener formato YYYY-MM-DD"
+                );
+            }
+
+            const inicio = new Date(`${fecha}T00:00:00`);
+
+            if (
+                Number.isNaN(inicio.getTime()) ||
+                inicio.getFullYear() !== Number(fecha.slice(0, 4)) ||
+                inicio.getMonth() + 1 !== Number(fecha.slice(5, 7)) ||
+                inicio.getDate() !== Number(fecha.slice(8, 10))
+            ) {
+                throw new BadRequestException(
+                    "La fecha ingresada no es válida"
+                );
+            }
+
+            const fin = new Date(inicio);
+            fin.setDate(fin.getDate() + 1);
+
+            consulta
+                .andWhere("reserva.fechaHora >= :inicio", { inicio })
+                .andWhere("reserva.fechaHora < :fin", { fin });
+        }
+
+        // Orden cronológico: primero los turnos más próximos
+        return await consulta
             .orderBy("reserva.fechaHora", "ASC")
             .getMany();
     }
