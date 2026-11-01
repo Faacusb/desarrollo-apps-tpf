@@ -53,12 +53,27 @@ export class AdminApiService {
         );
     }
     crearReserva(datos: CrearReservaAdmin): Observable<unknown> {
-    return this.http.post<unknown>(
-        `${this.baseUrl}/reservas/admin`,
-        datos,
-        { headers: this.construirHeaders() }
-    );
-}
+        return this.http.post<unknown>(
+            `${this.baseUrl}/reservas/admin`,
+            datos,
+            { headers: this.construirHeaders() }
+        );
+    }
+
+    listarReservasPaciente(idPaciente: number): Observable<ReservaAdmin[]> {
+        return this.http.get<ReservaAdmin[]>(
+            `${this.baseUrl}/reservas/paciente/${idPaciente}`,
+            { headers: this.construirHeaders() }
+        );
+    }
+
+    cancelarReservaPaciente(id: number): Observable<void> {
+        return this.http.patch<void>(
+            `${this.baseUrl}/reservas/${id}`,
+            null,
+            { headers: this.construirHeaders() }
+        );
+    }
 
     //metodos privados
     private construirHeaders(): HttpHeaders {

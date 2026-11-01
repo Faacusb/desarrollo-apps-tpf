@@ -8,15 +8,31 @@ import { MedicosLista } from './admin/medicos-lista/medicos-lista';
 import { ReservaForm } from './admin/reservas-form/reservas-form';
 import { Login } from './auth/login/login';
 import {authGuard,roleGuard} from './auth/guards/auth.guards';
+import { PacienteLayout } from './Reservas/paciente-layout/paciente-layout';
 
 export const routes: Routes = [
     { path: "login", component: Login },
-    { 
-        path: 'reservas', 
-        component: MisTurnosComponent,
+
+    {
+        path: 'reservas',
+        component: PacienteLayout,
+
         canActivate: [
-            authGuard, 
+            authGuard,
             roleGuard(['PACIENTE'])
+        ],
+
+        canActivateChild: [
+            authGuard,
+            roleGuard(['PACIENTE'])
+        ],
+
+        children: [
+            {
+                path: '',
+                component: MisTurnosComponent,
+                pathMatch: 'full'
+            }
         ]
     },
 

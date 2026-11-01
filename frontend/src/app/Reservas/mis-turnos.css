@@ -6,7 +6,7 @@
 }
 
 h1 {
-  color: #174a75;
+  color: #eaf4ff;
 }
 
 .turno {
@@ -55,4 +55,10 @@ h1 {
   padding: 20px;
   background-color: #f1f3f5;
   border-radius: 8px;
+}
+
+.acciones-superiores {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 25px;
 }

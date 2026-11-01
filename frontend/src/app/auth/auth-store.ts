@@ -58,6 +58,41 @@ export class AuthStore {
     }
 }
 
+    obtenerIdUsuario(): number | null {
+
+        const token = this.obtenerToken();
+
+        if (!token) {
+            return null;
+        }
+
+        try {
+
+            const parte = token.split('.')[1];
+
+            if (!parte) {
+                return null;
+            }
+
+            let base64 = parte
+                .replace(/-/g, '+')
+                .replace(/_/g, '/');
+
+            base64 += '='.repeat((4 - base64.length % 4) % 4);
+
+            const payload = JSON.parse(atob(base64));
+
+            const id = Number(payload.sub);
+
+            return Number.isSafeInteger(id) && id > 0
+                ? id
+                : null;
+
+        } catch {
+            return null;
+        }
+    }
+
     cerrarSesion(): void {
 
         sessionStorage.removeItem("accessToken");
