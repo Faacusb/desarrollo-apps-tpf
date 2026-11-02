@@ -1,0 +1,21 @@
+{
+  "apps": [
+    {
+      "name": "gestion-de-reservas",
+      "script": "dist/main.js",
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": 4000,
+        "DB_HOST": "localhost",
+        "DB_PORT": 5432,
+        "DB_USERNAME": "dawtp",
+        "DB_PASSWORD": "facundo77",
+        "DB_NAME": "gestion_de_reservas_daw",
+        "DB_LOGGING": "false",
+        "SWAGGER_HABILITADO": false,
+        "JWT_SECRET": "gtT0zY6&5Sx%7c29x&O4@^@73D&uz^xQ"
+      },
+      "time": true
+    }
+  ]
+}
