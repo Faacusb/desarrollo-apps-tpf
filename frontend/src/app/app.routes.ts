@@ -1,4 +1,3 @@
-
 import { Routes } from '@angular/router';
 import { MisTurnosComponent } from './Reservas/mis-turnos';
 import { AgendaMedica } from './agenda-medica/agenda-medica';
@@ -12,6 +11,37 @@ import { PacienteLayout } from './Reservas/paciente-layout/paciente-layout';
 import { CrearReservaPacienteComponent } from './Reservas/crear-reserva/crear-reserva';
 import { MedicoLayout } from './agenda-medica/medico-layout/medico-layout';
 
+/**
+ * Configuración de las rutas principales del frontend Angular.
+ *
+ * Define las pantallas y los componentes correspondientes
+ * a los distintos perfiles de usuario del sistema.
+ *
+ * Rutas principales:
+ *
+ * - /login: pantalla de inicio de sesión.
+ *
+ * - /reservas: área del paciente.
+ *   Permite consultar sus turnos y crear nuevas reservas.
+ *   Está protegida mediante authGuard y roleGuard
+ *   para usuarios con rol PACIENTE.
+ *
+ * - /agenda-medica: área del médico.
+ *   Permite consultar la agenda y registrar asistencias.
+ *   Está protegida mediante authGuard y roleGuard
+ *   para usuarios con rol MEDICO.
+ *
+ * - /admin: área de administración.
+ *   Contiene las pantallas de monitoreo de reservas,
+ *   listado de médicos y creación de reservas.
+ *
+ * Utiliza rutas hijas para organizar las funcionalidades
+ * de cada área mediante sus respectivos componentes layout.
+ *
+ * @remarks
+ * Las rutas administrativas se encuentran declaradas
+ * sin guards directamente en esta configuración.
+ */
 export const routes: Routes = [
     { path: "login", component: Login },
 
@@ -56,7 +86,7 @@ export const routes: Routes = [
         ]
     },
 
-    { 
+    {
         path: 'admin',
         component: AdminLayout,
         children: [
@@ -68,4 +98,3 @@ export const routes: Routes = [
     },
     // { path: '**', redirectTo: 'reservas' }
 ];
-

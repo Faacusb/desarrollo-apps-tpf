@@ -6,6 +6,16 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 
+/**
+ * Componente de gestión de la agenda del médico autenticado.
+ *
+ * Permite consultar las reservas correspondientes a una fecha
+ * determinada y registrar la asistencia de los pacientes.
+ *
+ * Los estados de asistencia admitidos son ATENDIDO y AUSENTE.
+ * Las operaciones se realizan mediante la API REST de NestJS
+ * utilizando autenticación JWT.
+ */
 @Component({
     selector: 'app-agenda-medica',
     imports: [
@@ -18,49 +28,109 @@ import { DialogModule } from 'primeng/dialog';
     templateUrl: './agenda-medica.html',
     styleUrl: './agenda-medica.css',
 })
-
 export class AgendaMedica implements OnInit {
 
-    // Inyectar servicios
+    /**
+     * Inicializa el componente con los servicios necesarios.
+     *
+     * @param http Servicio para realizar peticiones HTTP al backend.
+     * @param cdr Servicio para actualizar la vista cuando cambian los datos.
+     */
     constructor(
         private readonly http: HttpClient,
         private readonly cdr: ChangeDetectorRef
     ) {}
 
-    // Fecha seleccionada para consultar la agenda
+    /**
+     * Fecha seleccionada para filtrar la agenda médica.
+     *
+     * Utiliza el formato YYYY-MM-DD.
+     * Si está vacía, no se envía el parámetro fecha.
+     */
     fechaSeleccionada: string = '';
 
-    // Lista de turnos del médico
+    /**
+     * Lista de reservas obtenidas desde el backend.
+     *
+     * Se ordena de forma ascendente según fechaHora.
+     */
     turnos: any[] = [];
 
-    // Estado de la pantalla
+    /**
+     * Indica si hay una consulta de agenda en curso.
+     */
     cargando: boolean = false;
+
+    /**
+     * Mensaje de error mostrado al consultar o actualizar reservas.
+     */
     mensajeError: string = '';
 
-    // Mensaje cuando se registra correctamente una asistencia
+    /**
+     * Mensaje mostrado después de registrar una asistencia
+     * correctamente.
+     */
     mensajeExito: string = '';
 
-    // Indica si ya se realizó una consulta exitosa
+    /**
+     * Indica si la última consulta de agenda finalizó correctamente.
+     *
+     * Permite diferenciar una agenda vacía de una consulta
+     * que todavía no se realizó.
+     */
     consultaRealizada: boolean = false;
 
-    // Control de la ventana de confirmación
+    /**
+     * Controla la visibilidad del diálogo de confirmación
+     * de asistencia.
+     */
     dialogoVisible: boolean = false;
 
-    // Reserva sobre la que se realizará la acción
+    /**
+     * Reserva seleccionada para registrar su asistencia.
+     *
+     * Su valor es null cuando no hay una reserva seleccionada.
+     */
     turnoSeleccionado: any = null;
 
-    // Estado que se desea registrar
+    /**
+     * Estado de asistencia que se desea registrar.
+     *
+     * Solo admite ATENDIDO, AUSENTE o null cuando
+     * todavía no se seleccionó una acción.
+     */
     estadoSeleccionado: 'ATENDIDO' | 'AUSENTE' | null = null;
 
-    // Indica si se está guardando una asistencia
+    /**
+     * Indica si se está enviando una actualización de asistencia.
+     *
+     * Evita realizar solicitudes duplicadas mientras
+     * la operación está en curso.
+     */
     guardandoAsistencia: boolean = false;
 
-    
+    /**
+     * Método del ciclo de vida de Angular.
+     *
+     * Ejecuta la consulta inicial de la agenda cuando
+     * se inicializa el componente.
+     */
     ngOnInit(): void {
         this.consultarAgenda();
     }
 
-    // Consultar agenda del médico autenticado
+    /**
+     * Consulta la agenda del médico autenticado.
+     *
+     * Obtiene el token JWT desde Session Storage y realiza
+     * una petición GET al endpoint /api/v1/medicos/mi-agenda.
+     *
+     * Si hay una fecha seleccionada, la envía como parámetro.
+     * Ordena las reservas recibidas por fecha y horario.
+     *
+     * Gestiona los indicadores de carga, los mensajes de error
+     * y la actualización de la vista.
+     */
     consultarAgenda(): void {
 
         // Limpiar resultados y mensajes anteriores
@@ -68,7 +138,6 @@ export class AgendaMedica implements OnInit {
         this.mensajeError = '';
         this.mensajeExito = '';
         this.consultaRealizada = false;
-
 
         // Obtener el token JWT
         const token = sessionStorage.getItem('accessToken');
@@ -149,8 +218,16 @@ export class AgendaMedica implements OnInit {
         });
     }
 
-
-    // Abrir ventana para confirmar la asistencia
+    /**
+     * Abre el diálogo para confirmar el registro de asistencia.
+     *
+     * Solamente permite seleccionar reservas en estado ACTIVO.
+     * Guarda la reserva y el estado elegido antes de mostrar
+     * el diálogo de confirmación.
+     *
+     * @param turno Reserva sobre la que se registrará la asistencia.
+     * @param estado Nuevo estado: ATENDIDO o AUSENTE.
+     */
     abrirConfirmacion(
         turno: any,
         estado: 'ATENDIDO' | 'AUSENTE'
@@ -173,8 +250,13 @@ export class AgendaMedica implements OnInit {
         this.dialogoVisible = true;
     }
 
-
-    // Cerrar ventana de confirmación
+    /**
+     * Cierra el diálogo de confirmación de asistencia.
+     *
+     * No permite cerrarlo mientras se está guardando una
+     * asistencia. Al cerrarlo, limpia la reserva y el
+     * estado seleccionados.
+     */
     cerrarConfirmacion(): void {
 
         // Evitar cerrar mientras se guarda la asistencia
@@ -187,8 +269,21 @@ export class AgendaMedica implements OnInit {
         this.estadoSeleccionado = null;
     }
 
-
-    // Confirmar y guardar la asistencia del paciente
+    /**
+     * Registra la asistencia del paciente seleccionado.
+     *
+     * Verifica que exista una reserva activa, un estado
+     * seleccionado y un token JWT válido en la sesión.
+     *
+     * Envía una petición PUT al endpoint de asistencia
+     * del médico autenticado.
+     *
+     * Cuando la operación es exitosa, actualiza el estado
+     * de la reserva en la tabla y muestra un mensaje.
+     *
+     * En caso de error, informa el problema correspondiente
+     * sin modificar el estado de la reserva.
+     */
     confirmarAsistencia(): void {
 
         // Verificar que haya una reserva y un estado seleccionados
@@ -291,6 +386,12 @@ export class AgendaMedica implements OnInit {
         });
     }
 
+    /**
+     * Limpia el filtro de fecha seleccionado.
+     *
+     * Restablece fechaSeleccionada y vuelve a consultar
+     * la agenda médica.
+     */
     limpiarFiltro(): void {
         this.fechaSeleccionada = '';
         this.consultarAgenda();
